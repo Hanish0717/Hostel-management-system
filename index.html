@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="global.js"></script>
+<meta charset="UTF-8">
+<title>Hostel Management System</title>
+<link rel="stylesheet" href="theme.css">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 60px;
+        background: var(--navbar-bg);
+        box-shadow: var(--navbar-shadow);
+        transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .logo {
+        font-size: 22px;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        margin-left: 20px;
+        color: var(--text-primary);
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+        color: var(--primary-color);
+    }
+
+    
+    .hero {
+        text-align: center;
+        padding: 80px 20px 40px;
+    }
+
+    .hero h1 {
+        font-size: 40px;
+        color: var(--text-primary);
+        margin-bottom: 15px;
+    }
+
+    .hero span {
+        color: var(--primary-color);
+    }
+
+    .hero p {
+        color: var(--text-secondary);
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(93, 110, 240, 0.3);
+    }
+
+    
+    .features {
+    max-width: 1100px;   
+    margin: auto;
+    padding: 40px 20px 80px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 30px;
+}
+
+    .card {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    height: 150px;              
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+    .card:hover {
+        transform: translateY(-6px);
+    }
+
+    .icon {
+    width: 45px;
+    height: 45px;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 20px;
+    margin-bottom: 10px;
+    transition: background 0.3s ease;
+}
+
+    .card h3 {
+        margin-bottom: 8px;
+        color: var(--text-primary);
+    }
+
+    .card p {
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+    
+
+    
+    footer {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        background: var(--bg-secondary);
+        transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .theme-toggle {
+        position: fixed;
+        top: 20px;
+        right: 60px;
+        padding: 10px 15px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        z-index: 1000;
+    }
+
+    .theme-toggle:hover {
+        background: var(--primary-hover);
+        transform: scale(1.1);
+    }
+</style>
+</head>
+
+<body>
+
+
+
+
+<div class="navbar">
+    <div class="logo">Hostel Management System</div>
+    <div class="nav-links">
+        <a href="login.html?tab=login">Sign In</a>
+    </div>
+</div>
+
+
+<section class="hero">
+    <h1>The complete <span>Hostel Management System</span></h1>
+    <p>
+        Digitize registrations, room allocation, attendance, food tokens,
+        outings and complaints — all in one clean dashboard.
+    </p>
+    <button class="btn" onclick="window.location.href='login.html?tab=signup'">
+        Get Started →
+    </button>
+</section>
+
+
+<section class="features">
+    <div class="grid">
+
+        <div class="card">
+            <div class="icon">👤</div>
+            <h3>Student Profiles</h3>
+            <p>Centralized student records with guardian and academic details.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🛏</div>
+            <h3>Room Allocation</h3>
+            <p>Assign and track rooms by block, floor, capacity and gender.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">📅</div>
+            <h3>Daily Attendance</h3>
+            <p>Mark present, absent or leave with complete history tracking.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🍽</div>
+            <h3>Food Tokens</h3>
+            <p>Generate meal tokens via QR scan or manual verification.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🚪</div>
+            <h3>Outing Approvals</h3>
+            <p>Students request outings, wardens approve instantly.</p>
+        </div>
+
+        <div class="card">
+            <div class="icon">🛠</div>
+            <h3>Complaint Tickets</h3>
+            <p>Track issues from submission to resolution efficiently.</p>
+        </div>
+
+    </div>
+</section>
+
+
+<footer>
+    © 2026 Hostel Management System | All rights reserved
+</footer>
+
+<script src="theme.js"></script>
+</body>
+</html>

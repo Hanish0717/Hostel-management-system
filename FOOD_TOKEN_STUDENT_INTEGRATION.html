@@ -1,0 +1,357 @@
+
+
+
+
+<style>
+.token-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 30px;
+    border-radius: 12px;
+    color: white;
+    margin: 20px 0;
+}
+
+.token-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.token-card {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.token-card:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-5px);
+}
+
+.meal-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.token-id {
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    margin: 15px 0;
+    letter-spacing: 2px;
+}
+
+.token-status {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.status-valid {
+    background: #10b981;
+    color: white;
+}
+
+.status-used {
+    background: #6366f1;
+    color: white;
+}
+
+.status-expired {
+    background: #ef4444;
+    color: white;
+}
+
+.token-info {
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 15px 0;
+}
+
+.token-info-item {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+    opacity: 0.95;
+}
+
+.token-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-generate {
+    flex: 1;
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-generate:hover {
+    background: #059669;
+}
+
+.btn-copy {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.btn-copy:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.token-error {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.token-success {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid #10b981;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.no-tokens {
+    text-align: center;
+    padding: 30px;
+    opacity: 0.8;
+}
+
+.meal-selection {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.meal-btn {
+    padding: 12px 24px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.meal-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.meal-btn.active {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: white;
+}
+</style>
+
+
+<div id="tokenSection" class="token-section">
+    <h2>🍽️ Food Tokens</h2>
+    
+    
+    <div class="meal-selection">
+        <button class="meal-btn" onclick="generateTokenForMeal('breakfast')">
+            🌅 Breakfast
+        </button>
+        <button class="meal-btn" onclick="generateTokenForMeal('lunch')">
+            🍽️ Lunch
+        </button>
+        <button class="meal-btn" onclick="generateTokenForMeal('dinner')">
+            🌙 Dinner
+        </button>
+    </div>
+
+    
+    <div id="tokenMessage"></div>
+
+    
+    <div id="tokensContainer" class="token-container">
+        <div class="no-tokens">
+            <p>📭 No tokens yet. Generate one to get started!</p>
+        </div>
+    </div>
+
+    
+    <div style="font-size: 12px; opacity: 0.8; margin-top: 15px;">
+        🔄 Auto-refreshing every 5 seconds
+    </div>
+</div>
+
+
+<script>
+const API_URL = BASE_URL + "/api";
+
+
+async function generateTokenForMeal(mealType) {
+    try {
+        const messageDiv = document.getElementById("tokenMessage");
+        messageDiv.innerHTML = "⏳ Generating token...";
+
+        const response = await fetch(`${API_URL}/token/generate`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                studentId: currentUserID, 
+                mealType: mealType
+            })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            if (data.isNew) {
+                messageDiv.innerHTML = `
+                    <div class="token-success">
+                        ✅ Token generated successfully!
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="token-success">
+                        📭 You already have a token for ${mealType} today
+                    </div>
+                `;
+            }
+            
+            await loadTodayTokens();
+        } else {
+            messageDiv.innerHTML = `
+                <div class="token-error">
+                    ❌ ${data.message || 'Error generating token'}
+                </div>
+            `;
+        }
+    } catch (err) {
+        console.error("Error generating token:", err);
+        document.getElementById("tokenMessage").innerHTML = `
+            <div class="token-error">
+                ❌ Failed to generate token. Try again.
+            </div>
+        `;
+    }
+}
+
+
+async function loadTodayTokens() {
+    try {
+        const response = await fetch(`${API_URL}/token/today/${currentUserID}`);
+        const data = await response.json();
+
+        const container = document.getElementById("tokensContainer");
+
+        if (!data.data || data.data.length === 0) {
+            container.innerHTML = `
+                <div class="no-tokens">
+                    <p>📭 No tokens yet. Generate one to get started!</p>
+                </div>
+            `;
+            return;
+        }
+
+        
+        container.innerHTML = data.data.map(token => {
+            const status = token.status;
+            const mealEmoji = {
+                breakfast: "🌅",
+                lunch: "🍽️",
+                dinner: "🌙"
+            }[token.mealType] || "🍴";
+
+            const expiresAt = new Date(token.expiresAt);
+            const expiresTime = expiresAt.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            const usedAt = token.usedAt ? new Date(token.usedAt).toLocaleTimeString() : "-";
+
+            return `
+                <div class="token-card">
+                    <div class="meal-label">${mealEmoji} ${token.mealType}</div>
+                    <div class="token-id">${token.tokenId}</div>
+                    <div class="token-status status-${status}">${status}</div>
+                    <div class="token-info">
+                        <div class="token-info-item">
+                            <span>Expires:</span>
+                            <strong>${expiresTime}</strong>
+                        </div>
+                        <div class="token-info-item">
+                            <span>Used at:</span>
+                            <strong>${usedAt}</strong>
+                        </div>
+                        <div class="token-info-item">
+                            <span>Generated:</span>
+                            <strong>${new Date(token.generatedAt).toLocaleTimeString()}</strong>
+                        </div>
+                    </div>
+                    <div class="token-actions">
+                        <button class="btn-copy" onclick="copyToClipboard('${token.tokenId}')">
+                            📋 Copy ID
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join("");
+
+    } catch (err) {
+        console.error("Error loading tokens:", err);
+    }
+}
+
+
+function copyToClipboard(tokenId) {
+    navigator.clipboard.writeText(tokenId).then(() => {
+        alert(`✅ Token ${tokenId} copied to clipboard!`);
+    }).catch(err => {
+        console.error("Failed to copy:", err);
+    });
+}
+
+
+function autoRefreshTokens() {
+    loadTodayTokens();
+    setInterval(() => {
+        loadTodayTokens();
+    }, 5000);
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    autoRefreshTokens();
+});
+</script>

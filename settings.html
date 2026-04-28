@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="global.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Hostel Management</title>
+    <link rel="stylesheet" href="theme.css?v=3">
+    <style>
+        body {
+            display: flex;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar structure matching Warden/Student */
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .close-sidebar { display: none; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .menu a { display: block; padding: 10px; margin: 8px 0; color: white; text-decoration: none; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .menu a:hover, .menu a.active { background: rgba(255,255,255,0.2); font-weight: bold; }
+        
+        .main {
+            flex: 1;
+            padding: 30px;
+            margin-left: 230px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: margin-left 0.3s ease;
+            max-width: 800px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 24px; cursor: pointer; padding: 0; }
+
+        .settings-section {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .settings-section h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .setting-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .setting-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+        }
+        .setting-info p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* Radio Buttons for Theme */
+        .theme-options {
+            display: flex;
+            gap: 15px;
+        }
+        .theme-option {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--input-bg);
+            transition: all 0.2s;
+        }
+        .theme-option:hover {
+            border-color: var(--primary-color);
+        }
+        .theme-option input {
+            cursor: pointer;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: var(--input-border);
+            transition: .4s; border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 16px; width: 16px; left: 4px; bottom: 4px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .btn-save {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .btn-save:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2000;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
+            .close-sidebar { display: block; }
+            .mobile-menu-btn { display: block; }
+            .main { margin-left: 0; padding: 15px; }
+            .theme-options { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Generic Sidebar Wrapper -->
+    <div class="sidebar" id="sidebar">
+        <div>
+            <div class="logo">
+                <span>⚙️ Settings</span>
+                <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+            </div>
+            <div class="menu">
+                <a href="javascript:history.back()">← Back to Dashboard</a>
+                <a href="settings.html" class="active">Settings</a>
+            </div>
+        </div>
+        <div>
+            <button class="btn btn-outline" style="width: 100%; padding: 10px; background: transparent; border: 2px solid rgba(255,255,255,0.5); border-radius: 6px; color: white; cursor: pointer;" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="header">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+            <h1>Application Settings</h1>
+        </div>
+
+        <!-- Appearance Section -->
+        <div class="settings-section">
+            <h2>🎨 Appearance</h2>
+            
+            <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 15px;">
+                <div class="setting-info">
+                    <h3>Theme Preference</h3>
+                    <p>Select your preferred visual theme for the application.</p>
+                </div>
+                
+                <div class="theme-options">
+                    <label class="theme-option">
+                        <input type="radio" name="themeMode" value="light">
+                        ☀️ Light Mode
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="themeMode" value="dark">
+                        🌙 Dark Mode
+                    </label>
+                    <label class="theme-option">
+                        <input type="radio" name="themeMode" value="system">
+                        💻 System Default
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Preferences Section -->
+        <div class="settings-section">
+            <h2>⚙️ Preferences</h2>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <h3>Push Notifications</h3>
+                    <p>Receive alerts for attendance and outing updates.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="toggleNotifications">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-row" style="flex-direction: column; align-items: flex-start; gap: 10px;">
+                <div class="setting-info" style="margin-bottom: 5px;">
+                    <h3>Default Landing Page</h3>
+                    <p>Where should we take you after logging in?</p>
+                </div>
+                <select id="defaultPageSelect" style="width: 100%; max-width: 300px; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary);">
+                    <option value="dashboard">Dashboard</option>
+                    <option value="attendance">Attendance</option>
+                    <option value="profile">My Profile</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Account Section -->
+        <div class="settings-section">
+            <h2>👤 Account Settings</h2>
+            
+            <form id="accountForm" onsubmit="saveAccountSettings(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="accountName" placeholder="Your Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="accountEmail" placeholder="your.email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password (Optional)</label>
+                    <input type="password" id="accountPassword" placeholder="Leave blank to keep current">
+                </div>
+                
+                <button type="submit" class="btn-save" style="margin-top: 10px;">Save Account Changes</button>
+            </form>
+        </div>
+
+    </div>
+
+    <div id="toast">Settings saved successfully!</div>
+
+    <script src="theme.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

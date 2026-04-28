@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="global.js"></script>
+<meta charset="UTF-8">
+<title>Student Dashboard</title>
+<link rel="stylesheet" href="theme.css?v=2">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+
+body {
+    display: flex;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    background: var(--primary-color);
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: background 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.menu a {
+    display: block;
+    padding: 10px;
+    margin: 8px 0;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 8px;
+}
+
+.menu a:hover,
+.active {
+    background: #1e2a52;
+    color: white;
+}
+
+.bottom {
+    font-size: 14px;
+}
+
+.logout {
+    margin-top: 10px;
+    cursor: pointer;
+    color: #cbd5e1;
+}
+
+
+.main {
+    flex: 1;
+    padding: 30px;
+    margin-left: 230px;
+}
+
+
+.header h1 {
+    margin-bottom: 5px;
+}
+
+.header p {
+    color: gray;
+    margin-bottom: 20px;
+}
+
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+.card h3 {
+    color: gray;
+    font-size: 14px;
+}
+
+.card h2 {
+    margin-top: 10px;
+}
+
+
+.info {
+    margin-top: 25px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+}
+
+.info ul {
+    margin-top: 10px;
+    padding-left: 20px;
+}
+
+.info li {
+    margin-bottom: 8px;
+}
+
+.profile-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
+}
+
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+
+.form-group input,
+.form-group textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: var(--input-focus);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+
+.full {
+    grid-column: span 2;
+}
+
+
+textarea {
+    resize: none;
+    height: 80px;
+}
+
+
+.save-btn {
+    margin-top: 25px;
+    padding: 12px 20px;
+    background: linear-gradient(to right, #4f6df5, #3b55d9);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(79,109,245,0.3);
+}
+select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+select:focus {
+    border-color: var(--input-focus);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+/* Room Section Styles */
+.student-room-section { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 30px; border-radius: 12px; color: white; margin: 20px 0; }
+.room-status-container { background: rgba(255, 255, 255, 0.15); padding: 25px; border-radius: 12px; backdrop-filter: blur(10px); margin: 20px 0; }
+.room-status-header { font-size: 16px; opacity: 0.9; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+.room-number-display { font-size: 48px; font-weight: bold; margin: 20px 0; letter-spacing: 2px; }
+.room-details-list { list-style: none; padding: 0; margin: 20px 0; }
+.room-details-list li { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 15px; }
+.room-details-list li:last-child { border-bottom: none; }
+.room-details-label { opacity: 0.9; }
+.room-details-value { font-weight: bold; }
+.roommates-section { margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
+.roommates-title { font-size: 16px; font-weight: bold; margin-bottom: 15px; opacity: 0.95; }
+.roommate-card { background: rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #10b981; }
+.roommate-name { font-weight: bold; font-size: 14px; }
+.roommate-id { font-size: 12px; opacity: 0.8; }
+.no-room-container { text-align: center; padding: 50px 20px; }
+.no-room-icon { font-size: 64px; margin-bottom: 20px; }
+.no-room-message { font-size: 18px; margin-bottom: 10px; }
+.no-room-submessage { font-size: 14px; opacity: 0.8; }
+.room-amenities { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+.room-amenity-badge { display: inline-block; background: rgba(16, 185, 129, 0.3); padding: 6px 12px; border-radius: 20px; font-size: 12px; border: 1px solid rgba(16, 185, 129, 0.5); }
+.room-occupancy-indicator { display: flex; align-items: center; gap: 12px; margin: 15px 0; padding: 12px; background: rgba(255, 255, 255, 0.08); border-radius: 8px; }
+.occupancy-bar { flex: 1; height: 6px; background: rgba(255, 255, 255, 0.2); border-radius: 3px; overflow: hidden; }
+.occupancy-fill { height: 100%; background: linear-gradient(90deg, #10b981, #f59e0b); transition: width 0.3s; }
+.occupancy-text { font-size: 12px; font-weight: bold; white-space: nowrap; }
+.room-actions { display: flex; gap: 10px; margin-top: 20px; }
+.room-action-btn { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+.room-action-btn-primary { background: #10b981; color: white; }
+.room-action-btn-primary:hover { background: #059669; }
+.room-action-btn-secondary { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); }
+.room-action-btn-secondary:hover { background: rgba(255, 255, 255, 0.3); }
+.room-message-banner { padding: 12px; border-radius: 8px; margin: 15px 0; display: none; }
+.room-message-banner.show { display: block; }
+.room-message-banner.success { background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: #10b981; }
+.room-message-banner.error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444; }
+.room-info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+.room-info-item { background: rgba(255, 255, 255, 0.05); padding: 12px; border-radius: 8px; text-align: center; }
+.room-info-label { font-size: 11px; opacity: 0.8; text-transform: uppercase; }
+.room-info-value { font-size: 18px; font-weight: bold; margin-top: 8px; }
+
+/* Outing Pass Modern UI */
+.outing-pass-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 0 auto;
+    max-width: 650px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme='dark'] .outing-pass-card {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(145deg, var(--card-bg), #0f172a);
+    border: 1px solid #334155;
+}
+
+.outing-pass-header {
+    text-align: center;
+    border-bottom: 2px dashed var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.outing-pass-header h2 {
+    color: var(--primary-color);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.outing-pass-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (min-width: 600px) {
+    .outing-pass-body {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.outing-details {
+    flex: 1;
+}
+
+.outing-details p {
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+
+.outing-details p b {
+    color: var(--text-secondary);
+    display: inline-block;
+    width: 80px;
+}
+
+.outing-qr-container {
+    background: white !important;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    text-align: center;
+    width: 120px;
+    flex-shrink: 0;
+    align-self: center;
+}
+
+.outing-qr-container img {
+    width: 100px;
+    height: 100px;
+    display: block;
+}
+
+.outing-qr-container span {
+    display: block;
+    font-size: 11px;
+    color: #475569;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.outing-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.badge-approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.badge-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.badge-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+.outing-pass-footer {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px dashed var(--border-color);
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 40px;
+    font-weight: 900;
+    color: var(--text-primary);
+    opacity: 0.03;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Portfolio Profile Styles */
+.portfolio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.portfolio-edit-btn {
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.portfolio-edit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+}
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+.portfolio-section {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+.portfolio-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+.portfolio-item {
+    margin-bottom: 12px;
+}
+.portfolio-item label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 4px;
+}
+.portfolio-item p {
+    font-size: 15px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+.fade-transition {
+    transition: opacity 0.3s ease;
+}
+</style>
+</head>
+
+<body>
+
+
+
+
+<div class="sidebar">
+    <div>
+        <div class="logo">🏨 Hostel Management System</div>
+
+        <div class="menu">
+            <a onclick="loadDashboard()">Dashboard</a>
+            <a onclick="loadProfile()">My Profile</a>
+            <a onclick="loadMyRoom()">My Room</a>
+            <a onclick="loadMyFood()">My Food QR</a>
+            <a onclick="loadMyAttendance()">Attendance</a>
+            <a onclick="loadOuting()">Outings</a>
+            <a onclick="loadOutingStatus()">My Outings</a>
+            <a onclick="loadComplaint()">Complaints</a>
+            <a onclick="loadComplaintStatus()">My Complaints</a>
+            <a href="settings.html">⚙️ Settings</a>
+        </div>
+    </div>
+
+    <div class="bottom">
+        <div id="userEmail"></div>
+        <div class="logout" onclick="logout()">Sign out</div>
+    </div>
+</div>
+
+
+<div class="main">
+
+    <div id="dashboardContent">
+
+        <div class="header">
+            <h1>Dashboard</h1>
+            <p>Your hostel snapshot</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <h3>TOKENS TODAY</h3>
+                <h2 id="dashTokensToday">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>PENDING OUTINGS</h3>
+                <h2 id="dashPendingOutings">0</h2>
+            </div>
+
+            <div class="card">
+                <h3>OPEN COMPLAINTS</h3>
+                <h2 id="dashOpenComplaints">0</h2>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>Getting started</h3>
+            <ul>
+                <li>Complete your profile so the warden can allocate a room.</li>
+                <li>Show your <b>Food QR</b> at the mess for token verification.</li>
+                <li>Submit <b>Outing</b> requests in advance.</li>
+                <li>File any issue under <b>Complaints</b>.</li>
+            </ul>
+        </div>
+
+    </div>
+
+<div id="profileContent" style="display:none;" class="fade-transition">
+    
+    <div class="portfolio-header">
+        <div>
+            <h1>My Profile</h1>
+            <p>Your academic and personal information.</p>
+        </div>
+        <button class="portfolio-edit-btn" id="toggleProfileBtn" onclick="toggleProfileEditMode()">
+            ✏️ Edit Profile
+        </button>
+    </div>
+
+    <!-- VIEW MODE (Portfolio Style) -->
+    <div id="profileViewMode" class="profile-card fade-transition">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 150px; height: 150px; border-radius: 50%; background: var(--bg-tertiary); border: 3px solid var(--primary-color); margin: 0 auto; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: var(--card-shadow);">
+                <img id="viewPhoto" src="" alt="Profile Photo" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <span id="viewPhotoPlaceholder" style="font-size: 60px; color: var(--text-secondary);">👤</span>
+            </div>
+        </div>
+        <div class="portfolio-grid">
+            <div class="portfolio-section">
+                <h3>👤 Personal Info</h3>
+                <div class="portfolio-item"><label>Full Name</label><p id="viewName">-</p></div>
+                <div class="portfolio-item"><label>Student ID</label><p id="viewStudentId">-</p></div>
+                <div class="portfolio-item"><label>Phone Number</label><p id="viewPhone">-</p></div>
+                <div class="portfolio-item"><label>Date of Birth</label><p id="viewDob">-</p></div>
+            </div>
+
+            <div class="portfolio-section">
+                <h3>🎓 Academic Info</h3>
+                <div class="portfolio-item"><label>Course</label><p id="viewCourse">-</p></div>
+                <div class="portfolio-item"><label>Year of Study</label><p id="viewYear">-</p></div>
+            </div>
+
+            <div class="portfolio-section">
+                <h3>👨‍👩‍👦 Guardian Info</h3>
+                <div class="portfolio-item"><label>Guardian Name</label><p id="viewGuardian">-</p></div>
+                <div class="portfolio-item"><label>Guardian Phone</label><p id="viewGuardianPhone">-</p></div>
+            </div>
+
+            <div class="portfolio-section">
+                <h3>📍 Address</h3>
+                <div class="portfolio-item"><label>Permanent Address</label><p id="viewAddress">-</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODE (Form) -->
+    <div id="profileEditMode" class="profile-card fade-transition" style="display:none;">
+        <h2>Update Information</h2>
+        
+        <div class="form-group full" style="text-align:center; margin-bottom: 20px;">
+            <div style="width: 120px; height: 120px; border-radius: 50%; background: var(--bg-tertiary); border: 2px solid var(--primary-color); margin: 0 auto 10px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                <img id="editPhotoPreview" src="" alt="Photo" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <span id="editPhotoPlaceholder" style="font-size: 40px; color: var(--text-secondary);">👤</span>
+            </div>
+            
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 10px;">Select an avatar</p>
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px;">
+                <button type="button" onclick="selectAvatar('assets/avatar1.png')" style="background:none; border:2px solid transparent; border-radius:50%; cursor:pointer; padding:0; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="assets/avatar1.png" style="width:45px; height:45px; border-radius:50%; object-fit:cover;">
+                </button>
+                <button type="button" onclick="selectAvatar('assets/avatar2.png')" style="background:none; border:2px solid transparent; border-radius:50%; cursor:pointer; padding:0; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="assets/avatar2.png" style="width:45px; height:45px; border-radius:50%; object-fit:cover;">
+                </button>
+                <button type="button" onclick="selectAvatar('assets/avatar3.png')" style="background:none; border:2px solid transparent; border-radius:50%; cursor:pointer; padding:0; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="assets/avatar3.png" style="width:45px; height:45px; border-radius:50%; object-fit:cover;">
+                </button>
+                <button type="button" onclick="selectAvatar('assets/avatar4.png')" style="background:none; border:2px solid transparent; border-radius:50%; cursor:pointer; padding:0; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="assets/avatar4.png" style="width:45px; height:45px; border-radius:50%; object-fit:cover;">
+                </button>
+            </div>
+
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 5px;">Or upload a photo</p>
+            <label for="editPhoto" class="save-btn" style="cursor:pointer; display:inline-block; padding: 6px 15px; font-size:13px; background:var(--bg-tertiary); color:var(--text-primary); border: 1px solid var(--border-color);">Choose File</label>
+            <input type="file" id="editPhoto" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group"><label>Full Name</label><input type="text" id="editName" placeholder="Enter full name"></div>
+            <div class="form-group"><label>Student ID</label><input type="text" id="editStudentId" placeholder="Enter ID"></div>
+            <div class="form-group"><label>Phone</label><input type="text" id="editPhone" placeholder="Enter phone number"></div>
+            <div class="form-group"><label>Course</label><input type="text" id="editCourse" placeholder="Course name"></div>
+            <div class="form-group"><label>Year of Study</label><input type="text" id="editYear" placeholder="Year"></div>
+            <div class="form-group"><label>Date of Birth</label><input type="date" id="editDob"></div>
+            <div class="form-group"><label>Guardian Name</label><input type="text" id="editGuardian" placeholder="Guardian name"></div>
+            <div class="form-group"><label>Guardian Phone</label><input type="text" id="editGuardianPhone" placeholder="Guardian phone"></div>
+            <div class="form-group full"><label>Address</label><textarea id="editAddress" placeholder="Enter address"></textarea></div>
+        </div>
+        <button class="save-btn" onclick="saveProfileData()">Save Changes</button>
+    </div>
+
+</div>
+
+<div id="outingContent" style="display:none;">
+
+    <div class="header">
+        <h1>Outing Request</h1>
+        <p>Submit your outing request for warden approval.</p>
+    </div>
+
+    
+    <div id="outingStatusCard" style="display:none; margin-bottom: 25px;">
+        <div class="profile-card" style="border-left: 5px solid #f59e0b;">
+            <h3 style="margin-bottom: 15px;">📋 Current Outing Status</h3>
+            <div id="statusDisplay"></div>
+        </div>
+    </div>
+
+    
+    <div id="outingPassCard" style="display:none; margin-bottom: 25px;">
+        <div id="passContent"></div>
+    </div>
+
+    
+    <div class="profile-card">
+        <h2>📤 Submit New Outing Request</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="outingName" placeholder="Your full name">
+            </div>
+
+            <div class="form-group">
+                <label>Year of Study</label>
+                <input type="text" id="outingYear" placeholder="2nd Year, etc.">
+            </div>
+
+            <div class="form-group">
+                <label>Room Number</label>
+                <input type="text" id="roomNo" placeholder="e.g., 101">
+            </div>
+
+            <div class="form-group">
+                <label>JNTU Number</label>
+                <input type="text" id="jntuNumber" placeholder="e.g., 22JN1A05XX">
+            </div>
+
+            <div class="form-group">
+                <label>From Time</label>
+                <input type="datetime-local" id="fromTime" required>
+            </div>
+
+            <div class="form-group">
+                <label>To Time</label>
+                <input type="datetime-local" id="toTime" required>
+            </div>
+
+            <div class="form-group full">
+                <label>Reason for Outing</label>
+                <textarea id="reason" placeholder="Enter reason (Personal, Medical, Family, etc.)"></textarea>
+            </div>
+
+        </div>
+
+        <button class="save-btn" onclick="submitOuting()">📤 Submit Request</button>
+
+    </div>
+
+</div>
+
+<div id="roomContent" style="display:none;">
+    <div id="studentRoomSection" class="student-room-section">
+        <h2>🏠 My Room</h2>
+        <div id="messageContainer"></div>
+        <div id="noRoomContainer" class="no-room-container" style="display: none;">
+            <div class="no-room-icon">📭</div>
+            <div class="no-room-message">No Room Allocated Yet</div>
+            <div class="no-room-submessage">Contact the admin to get a room allocated</div>
+        </div>
+        <div id="roomContainer" style="display: none;">
+            <div class="room-status-container">
+                <div class="room-status-header">Your Room</div>
+                <div class="room-number-display" id="roomNumber">-</div>
+                <div class="room-info-grid">
+                    <div class="room-info-item">
+                        <div class="room-info-label">Block</div>
+                        <div class="room-info-value" id="roomBlock">-</div>
+                    </div>
+                    <div class="room-info-item">
+                        <div class="room-info-label">Floor</div>
+                        <div class="room-info-value" id="roomFloor">-</div>
+                    </div>
+                </div>
+                <ul class="room-details-list">
+                    <li>
+                        <span class="room-details-label">Capacity</span>
+                        <span class="room-details-value" id="roomCapacity">-</span>
+                    </li>
+                    <li>
+                        <span class="room-details-label">Current Occupancy</span>
+                        <span class="room-details-value" id="roomOccupancy">-</span>
+                    </li>
+                </ul>
+                <div class="room-occupancy-indicator">
+                    <div class="occupancy-bar">
+                        <div class="occupancy-fill" id="occupancyFill" style="width: 0%"></div>
+                    </div>
+                    <div class="occupancy-text" id="occupancyText">0%</div>
+                </div>
+                <div id="amenitiesContainer" style="display: none;">
+                    <div style="font-size: 12px; opacity: 0.9; margin-bottom: 10px;">✨ Room Amenities</div>
+                    <div class="room-amenities" id="amenitiesList"></div>
+                </div>
+                <div class="roommates-section">
+                    <div class="roommates-title">👥 Roommates</div>
+                    <div id="roommatesList">
+                        <div style="opacity: 0.8;">⏳ Loading...</div>
+                    </div>
+                </div>
+                <div class="room-actions">
+                    <button class="room-action-btn room-action-btn-secondary" onclick="refreshRoomData()">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="complaintContent" style="display:none;">
+
+    <div class="header">
+        <h1>Complaint</h1>
+        <p>Report any issue in your hostel.</p>
+    </div>
+
+    <div class="profile-card">
+
+        <h2>Complaint Details</h2>
+
+        <div class="form-grid">
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="complaintName" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label>Room Number</label>
+                <input type="text" id="complaintRoom" placeholder="Enter room number">
+            </div>
+
+            <div class="form-group">
+                <label>Issue Type</label>
+                <select id="issueType">
+                    <option value="">Select issue</option>
+                    <option>Electricity</option>
+                    <option>Water</option>
+                    <option>Cleaning</option>
+                    <option>Maintenance</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <select id="priority">
+                    <option value="">Select priority</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+
+            <div class="form-group full">
+                <label>Description</label>
+                <textarea id="description" placeholder="Describe your issue clearly"></textarea>
+            </div>
+
+        </div>
+
+        <button type="button" class="save-btn" onclick="submitComplaint()">Submit Complaint</button>
+
+    </div>
+
+</div>
+<div id="foodContent" style="display:none;">
+    <div class="header">
+        <h1>My Food Token</h1>
+        <p>Generate a token for your meal</p>
+    </div>
+    
+    <div class="profile-card">
+        <h2 style="margin-bottom: 15px;">Generate Token</h2>
+        <div class="form-group">
+            <label>Select Meal</label>
+            <select id="mealTypeSelect">
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+            </select>
+        </div>
+        <button class="save-btn" onclick="generateFoodToken()">Generate Token</button>
+    </div>
+    
+    <div id="tokenDisplayCard" class="profile-card" style="display:none; margin-top: 20px; text-align: center;">
+        <h2 style="color: #10b981; margin-bottom: 10px;">Token Generated!</h2>
+        <div style="background: var(--bg-secondary); padding: 20px; border-radius: 12px; display: inline-block; border: 1px solid var(--border-color);">
+            <div style="font-size: 32px; font-weight: bold; letter-spacing: 3px; color: var(--text-primary);" id="generatedTokenId">FT12345</div>
+            <img id="generatedTokenQr" src="" alt="QR Code" style="display:block; margin: 15px auto 0; width: 120px; height: 120px; mix-blend-mode: multiply;">
+        </div>
+        <p style="margin-top: 15px; color: #666;" id="tokenMealDetails">Lunch - Valid Today</p>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <h3>Today's Tokens</h3>
+        <div id="recentTokensList" style="margin-top: 10px;"></div>
+    </div>
+</div>
+
+<div id="attendanceContent" style="display:none;" class="fade-transition">
+    <div class="header">
+        <h1>My Attendance</h1>
+        <p>Your daily attendance records.</p>
+    </div>
+    <div class="profile-card">
+        <h2 style="margin-bottom: 15px; color: var(--text-primary);">Recent History</h2>
+        <div id="attendanceList">Loading...</div>
+    </div>
+</div>
+
+<div id="outingStatusContent" style="display:none;">
+    <h1>My Outing Requests</h1>
+    <div id="outingStatusList"></div>
+</div>
+<div id="complaintStatusContent" style="display:none;">
+    <h1>My Complaints</h1>
+    <div id="complaintStatusList"></div>
+</div>
+<script>
+const user = JSON.parse(localStorage.getItem("user"));
+
+if (!user || user.role !== "student") {
+    window.location.href = "login.html";
+} else {
+    document.getElementById("userEmail").innerText = user.name || "Student";
+}
+
+
+function loadDashboard() {
+    if(typeof hideAll === 'function') hideAll();
+    dashboardContent.style.display = "block";
+    fetchDashboardStats();
+}
+
+async function fetchDashboardStats() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(!user) return;
+    
+    try {
+        // Fetch Tokens Today
+        const tokenRes = await fetch(BASE_URL + "/api/token/today/" + user._id);
+        const tokenData = await tokenRes.json();
+        document.getElementById("dashTokensToday").innerText = (tokenData && tokenData.data) ? tokenData.data.length : 0;
+        
+        // Fetch Pending Outings
+        const outingRes = await fetch(BASE_URL + "/api/outing/student/" + user._id);
+        const outingData = await outingRes.json();
+        const pendingOutings = (outingData && outingData.allOutings) ? outingData.allOutings.filter(o => o.status === "pending").length : 0;
+        document.getElementById("dashPendingOutings").innerText = pendingOutings;
+        
+        // Fetch Open Complaints
+        const compRes = await fetch(BASE_URL + "/api/complaint");
+        const compData = await compRes.json();
+        const openComplaints = compData ? compData.filter(c => c.name === user.name && c.status !== "Resolved").length : 0;
+        document.getElementById("dashOpenComplaints").innerText = openComplaints;
+        
+    } catch(err) {
+        console.error("Error fetching dashboard stats:", err);
+    }
+}
+document.addEventListener("DOMContentLoaded", fetchDashboardStats);
+
+
+function loadProfile() {
+    if(typeof hideAll === 'function') hideAll();
+    dashboardContent.style.display = "none";
+    profileContent.style.display = "block";
+    outingContent.style.display = "none";
+    complaintContent.style.display = "none";
+    roomContent.style.display = "none";
+    if(document.getElementById("foodContent")) document.getElementById("foodContent").style.display = "none";
+    if(document.getElementById("attendanceContent")) document.getElementById("attendanceContent").style.display = "none";
+    
+    // Portfolio Logic
+    loadProfileData();
+}
+
+let currentProfilePhoto = null;
+
+function selectAvatar(url) {
+    currentProfilePhoto = url;
+    document.getElementById("editPhotoPreview").src = currentProfilePhoto;
+    document.getElementById("editPhotoPreview").style.display = "block";
+    document.getElementById("editPhotoPlaceholder").style.display = "none";
+}
+
+function previewPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement("canvas");
+                const MAX_WIDTH = 300;
+                const MAX_HEIGHT = 300;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, width, height);
+
+                currentProfilePhoto = canvas.toDataURL("image/jpeg", 0.7);
+                document.getElementById("editPhotoPreview").src = currentProfilePhoto;
+                document.getElementById("editPhotoPreview").style.display = "block";
+                document.getElementById("editPhotoPlaceholder").style.display = "none";
+            };
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+}
+
+// Portfolio Profile View Logic
+function loadProfileData() {
+    const savedData = JSON.parse(localStorage.getItem("studentProfileData"));
+    const viewMode = document.getElementById("profileViewMode");
+    const editMode = document.getElementById("profileEditMode");
+    const toggleBtn = document.getElementById("toggleProfileBtn");
+
+    if (savedData) {
+        if (savedData.photo) {
+            currentProfilePhoto = savedData.photo;
+            document.getElementById("viewPhoto").src = savedData.photo;
+            document.getElementById("viewPhoto").style.display = "block";
+            document.getElementById("viewPhotoPlaceholder").style.display = "none";
+            
+            document.getElementById("editPhotoPreview").src = savedData.photo;
+            document.getElementById("editPhotoPreview").style.display = "block";
+            document.getElementById("editPhotoPlaceholder").style.display = "none";
+        } else {
+            document.getElementById("viewPhoto").style.display = "none";
+            document.getElementById("viewPhotoPlaceholder").style.display = "block";
+            
+            document.getElementById("editPhotoPreview").style.display = "none";
+            document.getElementById("editPhotoPlaceholder").style.display = "block";
+        }
+
+        // Populate View Mode
+        document.getElementById("viewName").innerText = savedData.name || "-";
+        document.getElementById("viewStudentId").innerText = savedData.studentId || "-";
+        document.getElementById("viewPhone").innerText = savedData.phone || "-";
+        document.getElementById("viewCourse").innerText = savedData.course || "-";
+        document.getElementById("viewYear").innerText = savedData.year || "-";
+        document.getElementById("viewDob").innerText = savedData.dob || "-";
+        document.getElementById("viewGuardian").innerText = savedData.guardian || "-";
+        document.getElementById("viewGuardianPhone").innerText = savedData.guardianPhone || "-";
+        document.getElementById("viewAddress").innerText = savedData.address || "-";
+        
+        // Show View, Hide Edit
+        viewMode.style.display = "block";
+        editMode.style.display = "none";
+        toggleBtn.style.display = "flex";
+        
+        // Ensure inputs have data when editing later
+        document.getElementById("editName").value = savedData.name || "";
+        document.getElementById("editStudentId").value = savedData.studentId || "";
+        document.getElementById("editPhone").value = savedData.phone || "";
+        document.getElementById("editCourse").value = savedData.course || "";
+        document.getElementById("editYear").value = savedData.year || "";
+        document.getElementById("editDob").value = savedData.dob || "";
+        document.getElementById("editGuardian").value = savedData.guardian || "";
+        document.getElementById("editGuardianPhone").value = savedData.guardianPhone || "";
+        document.getElementById("editAddress").value = savedData.address || "";
+        
+    } else {
+        // No data, force Form Mode
+        viewMode.style.display = "none";
+        editMode.style.display = "block";
+        toggleBtn.style.display = "none";
+    }
+}
+
+function saveProfileData() {
+    const data = {
+        name: document.getElementById("editName").value,
+        studentId: document.getElementById("editStudentId").value,
+        phone: document.getElementById("editPhone").value,
+        course: document.getElementById("editCourse").value,
+        year: document.getElementById("editYear").value,
+        dob: document.getElementById("editDob").value,
+        guardian: document.getElementById("editGuardian").value,
+        guardianPhone: document.getElementById("editGuardianPhone").value,
+        address: document.getElementById("editAddress").value,
+        photo: currentProfilePhoto || (JSON.parse(localStorage.getItem("studentProfileData"))?.photo || null)
+    };
+
+    if (!data.name || !data.studentId || !data.phone) {
+        alert("❌ Name, Student ID, and Phone are required.");
+        return;
+    }
+
+    localStorage.setItem("studentProfileData", JSON.stringify(data));
+    alert("✅ Profile saved successfully!");
+    
+    // Smooth transition back to view mode
+    document.getElementById("profileEditMode").style.opacity = "0";
+    setTimeout(() => {
+        loadProfileData();
+        document.getElementById("profileViewMode").style.opacity = "0";
+        setTimeout(() => document.getElementById("profileViewMode").style.opacity = "1", 50);
+    }, 300);
+}
+
+function toggleProfileEditMode() {
+    const viewMode = document.getElementById("profileViewMode");
+    const editMode = document.getElementById("profileEditMode");
+    const toggleBtn = document.getElementById("toggleProfileBtn");
+    
+    viewMode.style.opacity = "0";
+    
+    setTimeout(() => {
+        viewMode.style.display = "none";
+        editMode.style.display = "block";
+        editMode.style.opacity = "0";
+        toggleBtn.style.display = "none"; // Hide edit button while editing
+        
+        setTimeout(() => editMode.style.opacity = "1", 50);
+    }, 300);
+}
+
+
+function loadOuting() {
+    if(typeof hideAll === 'function') hideAll();
+    dashboardContent.style.display = "none";
+    profileContent.style.display = "none";
+    outingContent.style.display = "block";
+    complaintContent.style.display = "none";
+    if(document.getElementById("foodContent")) document.getElementById("foodContent").style.display = "none";
+    if(document.getElementById("attendanceContent")) document.getElementById("attendanceContent").style.display = "none";
+    
+    
+    checkOutingStatus();
+    
+    
+    const outingRefreshInterval = setInterval(() => {
+        if (document.getElementById("outingContent").style.display === "block") {
+            checkOutingStatus();
+        } else {
+            clearInterval(outingRefreshInterval);
+        }
+    }, 5000);
+}
+
+async function submitOuting() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    const fromTime = document.getElementById("fromTime").value;
+    const toTime = document.getElementById("toTime").value;
+
+    if (!fromTime || !toTime) {
+        alert("❌ Please select both From and To times");
+        return;
+    }
+
+    const data = {
+        studentId: user._id,
+        jntuNumber: document.getElementById("jntuNumber").value,
+        name: document.getElementById("outingName").value,
+        year: document.getElementById("outingYear").value,
+        room: document.getElementById("roomNo").value,
+        from: new Date(fromTime).toISOString(),
+        to: new Date(toTime).toISOString(),
+        reason: document.getElementById("reason").value
+    };
+
+    if (!data.name || !data.year || !data.room || !data.reason) {
+        alert("❌ Please fill all fields");
+        return;
+    }
+
+    try {
+        const res = await fetch(BASE_URL + "/api/outing/request", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+            alert("✅ Outing request submitted successfully!");
+            
+            document.getElementById("outingName").value = "";
+            document.getElementById("outingYear").value = "";
+            document.getElementById("roomNo").value = "";
+            document.getElementById("jntuNumber").value = "";
+            document.getElementById("fromTime").value = "";
+            document.getElementById("toTime").value = "";
+            document.getElementById("reason").value = "";
+            
+            
+            setTimeout(() => checkOutingStatus(), 500);
+        } else {
+            alert("❌ " + (result.message || "Error submitting outing"));
+        }
+
+    } catch (err) {
+        console.error(err);
+        alert("❌ Server not running");
+    }
+}
+
+async function checkOutingStatus() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    if (!user._id) return;
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/outing/student/${user._id}`);
+        const data = await res.json();
+
+        const latest = data.latestRequest;
+
+        if (!latest) {
+            document.getElementById("outingStatusCard").style.display = "none";
+            document.getElementById("outingPassCard").style.display = "none";
+            return;
+        }
+
+        
+        document.getElementById("outingStatusCard").style.display = "block";
+
+        let statusColor = "#f59e0b";  
+        let statusEmoji = "🟡";
+        let statusText = "PENDING";
+
+        if (latest.status === "approved") {
+            statusColor = "#10b981";
+            statusEmoji = "✅";
+            statusText = "APPROVED";
+        } else if (latest.status === "rejected") {
+            statusColor = "#ef4444";
+            statusEmoji = "❌";
+            statusText = "REJECTED";
+        }
+
+        const fromDate = new Date(latest.from).toLocaleString();
+        const toDate = new Date(latest.to).toLocaleString();
+
+        document.getElementById("statusDisplay").innerHTML = `
+            <div style="text-align: center; padding: 15px;">
+                <div style="font-size: 2em; margin-bottom: 10px;">${statusEmoji}</div>
+                <h2 style="color: ${statusColor}; margin-bottom: 15px;">Status: ${statusText}</h2>
+                <p><b>From:</b> ${fromDate}</p>
+                <p><b>To:</b> ${toDate}</p>
+                <p><b>Reason:</b> ${latest.reason}</p>
+                ${latest.remarks ? `<p><b>Remarks:</b> ${latest.remarks}</p>` : ""}
+                <p style="margin-top: 10px; color: #666; font-size: 12px;">Requested on: ${new Date(latest.createdAt).toLocaleDateString()}</p>
+            </div>
+        `;
+
+        
+        if (latest.status === "approved") {
+            document.getElementById("outingPassCard").style.display = "block";
+            
+            const profileData = JSON.parse(localStorage.getItem("studentProfileData")) || {};
+            const photoSrc = profileData.photo || ""; 
+            const photoElement = photoSrc 
+                ? `<img src="${photoSrc}" style="width:120px; height:120px; object-fit:cover; border-radius:10px; border: 2px solid #eee;">` 
+                : `<div style="width:120px; height:120px; border-radius:10px; background:#e2e8f0; display:flex; align-items:center; justify-content:center; font-size:50px; border: 2px solid #ddd;">👤</div>`;
+
+            const d = new Date(latest.approvedAt || latest.createdAt);
+            const genDate = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+
+            const passHTML = `
+                <div style="display:flex; justify-content:flex-end; margin-bottom: 10px;">
+                    <button class="save-btn" style="margin:0; padding:8px 15px; background:var(--primary-color); font-size:14px; cursor:pointer; display:flex; align-items:center; gap:5px;" onclick="downloadOutingPass('${user._id}')">
+                        📥 Download Pass
+                    </button>
+                </div>
+                <div id="outingPassElement" style="width: 520px; height: 280px; background: white; padding: 30px; border-radius: 8px; font-family: 'Arial', sans-serif; color: black; box-sizing: border-box; position: relative;">
+                    <h1 style="font-size: 28px; font-weight: 900; margin: 0 0 20px 0; letter-spacing: 0.5px; color: #000; text-transform: uppercase;">HOSTEL OUTING PASS</h1>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: stretch; height: 180px;">
+                        
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between;">
+                            ${photoElement}
+                            <div style="font-size: 14px; color: #333; line-height: 1.4;">
+                                Show this pass at the gate.<br>
+                                Only valid for this outing request.
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; text-align: right;">
+                            <div>
+                                <div style="font-size: 19px; margin-bottom: 8px; color: #000;">Regd No: <span style="font-weight: 600;">${latest.jntuNumber}</span></div>
+                                <div style="font-size: 15px; color: #444;">Generated: ${genDate}</div>
+                            </div>
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=PASS-${latest.passId}&margin=0" style="width: 110px; height: 110px;" alt="QR Code">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById("passContent").innerHTML = passHTML;
+        } else {
+            document.getElementById("outingPassCard").style.display = "none";
+        }
+
+    } catch (err) {
+        console.error("Error checking outing status:", err);
+    }
+}
+
+async function downloadOutingPass(studentId) {
+    const { jsPDF } = window.jspdf;
+    const passElement = document.getElementById("outingPassElement");
+    
+    if (!passElement) return;
+
+    try {
+        const btn = event.currentTarget || document.querySelector("button[onclick*='downloadOutingPass']");
+        if(btn) {
+            btn.innerHTML = "⏳ Generating...";
+            btn.disabled = true;
+        }
+
+        const canvas = await html2canvas(passElement, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: "#ffffff"
+        });
+
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF({
+            orientation: "landscape",
+            unit: "px",
+            format: [canvas.width / 2, canvas.height / 2]
+        });
+
+        pdf.addImage(imgData, "PNG", 0, 0, canvas.width / 2, canvas.height / 2);
+        pdf.save(`outing_pass_${studentId}.pdf`);
+
+        if(btn) {
+            btn.innerHTML = "📥 Download Pass";
+            btn.disabled = false;
+        }
+    } catch(err) {
+        console.error("Error downloading pass:", err);
+        alert("Failed to generate PDF. Make sure all images are loaded.");
+        const btn = document.querySelector("button[onclick*='downloadOutingPass']");
+        if(btn) {
+            btn.innerHTML = "📥 Download Pass";
+            btn.disabled = false;
+        }
+    }
+}
+
+async function loadOutingStatus() {
+    hideAll();
+    document.getElementById("outingStatusContent").style.display = "block";
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    if (!user._id) {
+        document.getElementById("outingStatusList").innerHTML = "<p>Not logged in</p>";
+        return;
+    }
+
+    try {
+        const res = await fetch(`http://localhost:5000/api/outing/student/${user._id}`);
+        const data = await res.json();
+
+        if (!data.allOutings || data.allOutings.length === 0) {
+            document.getElementById("outingStatusList").innerHTML = `
+                <div class="profile-card">
+                    <p style="text-align: center; color: #999;">📭 You have no outing requests yet</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = "";
+        data.allOutings.forEach(outing => {
+            let statusBadge = "🟡 PENDING";
+            let statusColor = "#f59e0b";
+
+            if (outing.status === "approved") {
+                statusBadge = "✅ APPROVED";
+                statusColor = "#10b981";
+            } else if (outing.status === "rejected") {
+                statusBadge = "❌ REJECTED";
+                statusColor = "#ef4444";
+            }
+
+            const fromDate = new Date(outing.from).toLocaleString();
+            const toDate = new Date(outing.to).toLocaleString();
+
+            html += `
+                <div class="profile-card" style="border-left: 5px solid ${statusColor}; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div>
+                            <p><b>From:</b> ${fromDate}</p>
+                            <p><b>To:</b> ${toDate}</p>
+                            <p><b>Reason:</b> ${outing.reason}</p>
+                            ${outing.remarks ? `<p><b>Remarks:</b> ${outing.remarks}</p>` : ""}
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.2em; color: ${statusColor}; font-weight: bold;">${statusBadge}</div>
+                            <p style="font-size: 12px; color: #666; margin-top: 10px;">
+                                ${new Date(outing.createdAt).toLocaleDateString()}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById("outingStatusList").innerHTML = html;
+
+    } catch (err) {
+        console.error("Error loading outing status:", err);
+        document.getElementById("outingStatusList").innerHTML = "<p>Error loading data</p>";
+    }
+}
+
+function hideAll() {
+    document.getElementById("dashboardContent").style.display = "none";
+    document.getElementById("profileContent").style.display = "none";
+    document.getElementById("outingContent").style.display = "none";
+    document.getElementById("complaintContent").style.display = "none";
+    document.getElementById("outingStatusContent").style.display = "none";
+    document.getElementById("complaintStatusContent").style.display = "none";
+    if(document.getElementById("roomContent")) document.getElementById("roomContent").style.display = "none";
+    if(document.getElementById("foodContent")) document.getElementById("foodContent").style.display = "none";
+    if(document.getElementById("attendanceContent")) document.getElementById("attendanceContent").style.display = "none";
+}
+
+function loadMyRoom() {
+    hideAll();
+    document.getElementById("roomContent").style.display = "block";
+    loadStudentRoomData();
+}
+
+const API_URL = BASE_URL + "/api";
+async function loadStudentRoomData() {
+    try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user || !user._id) return;
+
+        const response = await fetch(`${API_URL}/rooms/student/${user._id}`);
+        const data = await response.json();
+
+        const noRoomContainer = document.getElementById('noRoomContainer');
+        const roomContainer = document.getElementById('roomContainer');
+
+        if (!response.ok || !data.data || !data.data.room) {
+            noRoomContainer.style.display = 'block';
+            roomContainer.style.display = 'none';
+            return;
+        }
+
+        noRoomContainer.style.display = 'none';
+        roomContainer.style.display = 'block';
+
+        const room = data.data.room;
+
+        document.getElementById('roomNumber').textContent = room.roomNumber;
+        document.getElementById('roomBlock').textContent = `Block ${room.block}`;
+        document.getElementById('roomFloor').textContent = `Floor ${room.floor}`;
+        document.getElementById('roomCapacity').textContent = room.capacity;
+        document.getElementById('roomOccupancy').textContent = `${room.occupiedCount}/${room.capacity}`;
+
+        const occupancyPercent = (room.occupiedCount / room.capacity) * 100;
+        document.getElementById('occupancyFill').style.width = `${occupancyPercent}%`;
+        document.getElementById('occupancyText').textContent = `${Math.round(occupancyPercent)}%`;
+
+        if (room.amenities && room.amenities.length > 0) {
+            document.getElementById('amenitiesContainer').style.display = 'block';
+            document.getElementById('amenitiesList').innerHTML = room.amenities
+                .map(amenity => `<div class="room-amenity-badge">✓ ${amenity}</div>`)
+                .join('');
+        }
+
+        if (room.students && room.students.length > 0) {
+            const otherStudents = room.students.filter(s => s._id !== user._id);
+            if (otherStudents.length > 0) {
+                document.getElementById('roommatesList').innerHTML = otherStudents
+                    .map(student => `
+                        <div class="roommate-card">
+                            <div class="roommate-name">${student.fullName}</div>
+                            <div class="roommate-id">${student.studentId || 'N/A'}</div>
+                        </div>
+                    `).join('');
+            } else {
+                document.getElementById('roommatesList').innerHTML = '<div style="opacity: 0.8;">No roommates yet</div>';
+            }
+        }
+    } catch (err) {
+        console.error('Error loading room data:', err);
+    }
+}
+function refreshRoomData() { loadStudentRoomData(); }
+
+function loadMyFood() {
+    hideAll();
+    document.getElementById("foodContent").style.display = "block";
+    loadRecentTokens();
+}
+
+async function generateFoodToken() {
+    const mealType = document.getElementById("mealTypeSelect").value;
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    try {
+        const res = await fetch(BASE_URL + "/api/token/generate", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ studentId: user._id, mealType })
+        });
+        const data = await res.json();
+        
+        if(res.ok) {
+            document.getElementById("tokenDisplayCard").style.display = "block";
+            document.getElementById("generatedTokenId").innerText = data.data.tokenId;
+            document.getElementById("generatedTokenQr").src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${data.data.tokenId}`;
+            document.getElementById("tokenMealDetails").innerText = `${data.data.mealType.toUpperCase()} - Valid until ${new Date(data.data.expiresAt).toLocaleTimeString()}`;
+            loadRecentTokens();
+        } else {
+            alert("Error: " + data.message);
+        }
+    } catch(err) {
+        await window.safeFetchCheck(e?.target?.querySelector("button"));
+    }
+}
+
+async function loadRecentTokens() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    try {
+        const res = await fetch(`http://localhost:5000/api/token/today/${user._id}`);
+        const data = await res.json();
+        let html = "";
+        data.data.forEach(t => {
+            let color = t.status === 'valid' ? '#10b981' : (t.status === 'used' ? '#6b7280' : '#ef4444');
+            html += `
+            <div style="background:var(--card-bg); padding:15px; border-radius:8px; border: 1px solid var(--border-color); border-left:4px solid ${color}; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--card-shadow);">
+                <div>
+                    <b style="font-size:18px; color:var(--text-primary);">${t.tokenId}</b><br>
+                    <small style="color:var(--text-secondary);">${t.mealType.toUpperCase()}</small>
+                </div>
+                <div style="font-weight:bold; color:${color}; padding: 5px 10px; background: ${color}20; border-radius: 20px; font-size: 12px;">${t.status.toUpperCase()}</div>
+            </div>`;
+        });
+        document.getElementById("recentTokensList").innerHTML = html || "<p>No tokens generated today.</p>";
+    } catch(err) {
+        document.getElementById("recentTokensList").innerHTML = "<p>Failed to load tokens.</p>";
+    }
+}
+
+function loadComplaint() {
+    if(typeof hideAll === 'function') hideAll();
+    // Fallback if hideAll doesn't catch everything
+    dashboardContent.style.display = "none";
+    profileContent.style.display = "none";
+    outingContent.style.display = "none";
+    if(document.getElementById("roomContent")) document.getElementById("roomContent").style.display = "none";
+    if(document.getElementById("foodContent")) document.getElementById("foodContent").style.display = "none";
+    if(document.getElementById("outingStatusContent")) document.getElementById("outingStatusContent").style.display = "none";
+    if(document.getElementById("complaintStatusContent")) document.getElementById("complaintStatusContent").style.display = "none";
+    if(document.getElementById("attendanceContent")) document.getElementById("attendanceContent").style.display = "none";
+    
+    document.getElementById("complaintContent").style.display = "block";
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(user && user.name) {
+        document.getElementById("complaintName").value = user.name;
+    }
+}
+
+async function submitComplaint() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const name = document.getElementById("complaintName").value;
+    const room = document.getElementById("complaintRoom").value;
+    const issueType = document.getElementById("issueType").value;
+    const priority = document.getElementById("priority").value;
+    const description = document.getElementById("description").value;
+
+    if (!name || !room || !issueType || !priority || !description) {
+        alert("❌ Please fill in all fields");
+        return;
+    }
+
+    try {
+        const res = await fetch(BASE_URL + "/api/complaint", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, room, issueType, priority, description, status: "Pending" })
+        });
+        
+        const data = await res.json();
+        
+        if (res.ok) {
+            alert("✅ Complaint submitted successfully!");
+            document.getElementById("complaintRoom").value = "";
+            document.getElementById("issueType").value = "";
+            document.getElementById("priority").value = "";
+            document.getElementById("description").value = "";
+            loadComplaintStatus();
+        } else {
+            alert("❌ " + (data.message || "Failed to submit complaint"));
+        }
+    } catch (err) {
+        alert("❌ Server not running or connection error");
+    }
+}
+
+async function loadComplaintStatus() {
+    if(typeof hideAll === 'function') hideAll();
+    dashboardContent.style.display = "none";
+    profileContent.style.display = "none";
+    outingContent.style.display = "none";
+    complaintContent.style.display = "none";
+    if(document.getElementById("roomContent")) document.getElementById("roomContent").style.display = "none";
+    if(document.getElementById("foodContent")) document.getElementById("foodContent").style.display = "none";
+    if(document.getElementById("outingStatusContent")) document.getElementById("outingStatusContent").style.display = "none";
+    if(document.getElementById("attendanceContent")) document.getElementById("attendanceContent").style.display = "none";
+    
+    document.getElementById("complaintStatusContent").style.display = "block";
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    
+    try {
+        const res = await fetch(BASE_URL + "/api/complaint");
+        const data = await res.json();
+
+        let html = "";
+        let count = 0;
+
+        data.forEach(c => {
+            if (c.name === user.name) {
+                count++;
+                let statusColor = c.status === 'Resolved' ? '#10b981' : (c.status === 'In Progress' ? '#3b82f6' : '#f59e0b');
+                html += `
+                <div style="background:var(--card-bg); padding:20px; border-radius:12px; border: 1px solid var(--border-color); border-left:5px solid ${statusColor}; margin-bottom:15px; box-shadow:var(--card-shadow);">
+                    <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom:10px;">
+                        <div>
+                            <b style="font-size:18px; color:var(--text-primary);">${c.issueType}</b>
+                            <span style="font-size:12px; background:var(--bg-tertiary); color:var(--text-secondary); padding:3px 8px; border-radius:12px; margin-left:10px;">Priority: ${c.priority}</span>
+                        </div>
+                        <div style="font-weight:bold; color:${statusColor}; padding: 5px 12px; background: ${statusColor}15; border-radius: 20px; font-size: 13px; text-transform:uppercase;">${c.status}</div>
+                    </div>
+                    <p style="color:var(--text-secondary); margin-bottom: 10px;">${c.description}</p>
+                    <small style="color:var(--text-tertiary);">Room: ${c.room}</small>
+                </div>`;
+            }
+        });
+
+        document.getElementById("complaintStatusList").innerHTML = count > 0 ? html : "<p style='color:var(--text-secondary);'>You have no complaints submitted.</p>";
+    } catch(err) {
+        document.getElementById("complaintStatusList").innerHTML = "<p style='color:red;'>Failed to load complaints.</p>";
+    }
+}
+
+async function checkComplaintStatus() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const res = await fetch(BASE_URL + "/api/complaint");
+    const data = await res.json();
+
+    data.forEach(c => {
+
+        
+        if (c.name?.toLowerCase() === user.name?.toLowerCase() && c.status === "Resolved") {
+
+            const key = "resolved_" + c._id;
+
+            if (!localStorage.getItem(key)) {
+                alert("Your complaint has been resolved ✅");
+
+                localStorage.setItem(key, "shown");
+            }
+        }
+    });
+}
+checkComplaintStatus();
+
+async function loadMyAttendance() {
+    if(typeof hideAll === 'function') hideAll();
+    
+    // Fallback if hideAll doesn't catch everything
+    dashboardContent.style.display = "none";
+    profileContent.style.display = "none";
+    outingContent.style.display = "none";
+    complaintContent.style.display = "none";
+    if(document.getElementById("roomContent")) document.getElementById("roomContent").style.display = "none";
+    if(document.getElementById("foodContent")) document.getElementById("foodContent").style.display = "none";
+    if(document.getElementById("outingStatusContent")) document.getElementById("outingStatusContent").style.display = "none";
+    if(document.getElementById("complaintStatusContent")) document.getElementById("complaintStatusContent").style.display = "none";
+    
+    document.getElementById("attendanceContent").style.display = "block";
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(!user || !user._id) return;
+    
+    try {
+        const res = await fetch(BASE_URL + `/api/attendance/history/${user._id}`);
+        const data = await res.json();
+        
+        let html = "";
+        if(data && data.length > 0) {
+            data.forEach(a => {
+                let color = a.status === 'present' ? '#10b981' : '#ef4444';
+                html += `
+                <div style="background:var(--card-bg); padding:15px; border-radius:8px; border: 1px solid var(--border-color); border-left:4px solid ${color}; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--card-shadow);">
+                    <div>
+                        <b style="font-size:16px; color:var(--text-primary);">${new Date(a.date).toLocaleDateString()}</b><br>
+                        <small style="color:var(--text-secondary);">${a.remarks || 'No remarks'}</small>
+                    </div>
+                    <div style="font-weight:bold; color:${color}; padding: 5px 10px; background: ${color}20; border-radius: 20px; font-size: 12px;">${a.status.toUpperCase()}</div>
+                </div>`;
+            });
+        } else {
+            html = "<p style='color:var(--text-secondary);'>No attendance records found.</p>";
+        }
+        document.getElementById("attendanceList").innerHTML = html;
+    } catch(err) {
+        document.getElementById("attendanceList").innerHTML = "<p style='color:red;'>Error loading attendance. Ensure server is running.</p>";
+    }
+}
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.href = "login.html";
+}
+</script>
+<script src="theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,826 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="global.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Register - Hostel Management System</title>
+    
+    
+    <link rel="stylesheet" href="theme.css?v=2">
+    
+    <style>
+        c
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .register-header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .register-header p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        
+        .form-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all var(--hover-transition);
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            background-color: var(--input-bg);
+        }
+
+        .form-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-input.error {
+            border-color: var(--error-color);
+            background-color: var(--error-light);
+        }
+
+        .success-message {
+            background-color: var(--success-light);
+            color: var(--success-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        
+        .password-strength {
+            margin-top: 8px;
+            display: none;
+        }
+
+        .password-strength.show {
+            display: block;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background-color: var(--border-light);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .strength-fill.weak {
+            width: 25%;
+            background-color: var(--error-color);
+        }
+
+        .strength-fill.medium {
+            width: 50%;
+            background-color: var(--warning-color);
+        }
+
+        .strength-fill.strong {
+            width: 75%;
+            background-color: var(--info-color);
+        }
+
+        .strength-fill.excellent {
+            width: 100%;
+            background-color: var(--success-color);
+        }
+
+        .strength-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        
+        .otp-section {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+
+        .otp-header {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .otp-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .otp-status.verified {
+            color: var(--success-color);
+        }
+
+        .otp-status-icon {
+            font-size: 16px;
+        }
+
+        
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--hover-transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--button-text);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 110, 240, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--button-text);
+            margin-bottom: 12px;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--secondary-hover);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-loading::after {
+            content: '';
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        
+        .otp-inputs {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            transition: all var(--hover-transition);
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .otp-input.error {
+            border-color: var(--error-color);
+            background-color: var(--error-light);
+        }
+
+        
+        .theme-toggle-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-toggle-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--card-shadow);
+            transition: all var(--hover-transition);
+        }
+
+        .theme-toggle-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        
+        @media (max-width: 480px) {
+            .form-section {
+                padding: 20px;
+            }
+
+            .register-header h1 {
+                font-size: 24px;
+            }
+
+            .otp-inputs {
+                gap: 6px;
+            }
+
+            .otp-input {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    
+
+    
+    <div class="register-container">
+        
+        <div class="register-header">
+            <h1>📝 Register</h1>
+            <p>Create your hostel account</p>
+        </div>
+
+        
+        <div id="successMessage" class="success-message">
+            <strong>✅ Success!</strong> <span id="successText"></span>
+        </div>
+
+        
+        <form id="registrationForm" class="register-form">
+            
+            <div id="step1" class="form-section">
+                <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-primary);">
+                    Step 1: Verify Mobile Number
+                </h3>
+
+                <div class="form-group">
+                    <label for="phone">Mobile Number (10 digits) *</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        class="form-input" 
+                        placeholder="9999999999"
+                        pattern="[0-9]{10}"
+                        title="Phone number must be exactly 10 digits"
+                        maxlength="10"
+                        required
+                    >
+                    <div class="error-message" id="phoneError"></div>
+                </div>
+
+                <button type="button" id="sendOtpBtn" class="btn btn-secondary">
+                    Send OTP to Mobile
+                </button>
+
+                
+                <div id="otpInputSection" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-light);">
+                    <div class="form-group">
+                        <label>Enter OTP *</label>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">
+                            Check your SMS for the 6-digit code
+                        </p>
+                        <input 
+                            type="text" 
+                            id="otp" 
+                            class="form-input" 
+                            placeholder="123456"
+                            maxlength="6"
+                        >
+                        <div class="error-message" id="otpError"></div>
+                    </div>
+
+                    <button type="button" id="verifyOtpBtn" class="btn btn-primary">
+                        Verify OTP
+                    </button>
+                </div>
+
+                
+                <div id="otpStatus" class="otp-section" style="display: none; margin-top: 20px;">
+                    <div class="otp-status">
+                        <span class="otp-status-icon">⏱️</span>
+                        <span id="otpTimer"></span>
+                    </div>
+                </div>
+
+                
+                <div id="phoneVerified" style="display: none; margin-top: 20px; padding: 12px; background-color: var(--success-light); border-radius: 8px; color: var(--success-color);">
+                    <strong>✅ Mobile number verified!</strong> Continue with registration details.
+                </div>
+            </div>
+
+            
+            <div id="step2" class="form-section" style="display: none;">
+                <h3 style="margin-top: 0; margin-bottom: 20px; color: var(--text-primary);">
+                    Step 2: Your Details
+                </h3>
+
+                <div class="form-group">
+                    <label for="fullName">Full Name *</label>
+                    <input 
+                        type="text" 
+                        id="fullName" 
+                        class="form-input" 
+                        placeholder="John Doe"
+                        pattern="[A-Za-z\s\-]{3,50}"
+                        title="Name must be 3-50 characters, only letters, spaces, and hyphens"
+                        required
+                    >
+                    <div class="error-message" id="fullNameError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="studentId">Student ID *</label>
+                    <input 
+                        type="text" 
+                        id="studentId" 
+                        class="form-input" 
+                         placeholder="1234567890"
+                         pattern="[A-Z0-9]{10}"
+                         title="Student ID must be 10 alphanumeric characters (e.g., 24345A4210)"
+                         required
+                     >
+                    <div class="error-message" id="studentIdError"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneStep2">Phone Number (Verified) *</label>
+                    <input 
+                        type="tel" 
+                        id="phoneStep2" 
+                        class="form-input" 
+                        placeholder="9999999999"
+                        pattern="[0-9]{10}"
+                        title="Phone number must be exactly 10 digits"
+                        readonly
+                        required
+                    >
+                    <small style="color: var(--text-secondary); font-size: 12px;">Already verified in Step 1</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="••••••••"
+                        minlength="8"
+                        title="Must contain at least 8 chars, 1 uppercase, 1 lowercase, 1 number, and 1 special character"
+                        required
+                    >
+                    <div class="error-message" id="passwordError"></div>
+                    
+                    
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text">
+                            Strength: <strong id="strengthText">Weak</strong>
+                        </div>
+                        <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 6px;">
+                            ✓ Must contain: 8+ chars, uppercase, lowercase, number, special character
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        class="form-input" 
+                        placeholder="••••••••"
+                        required
+                    >
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+
+                <button type="submit" id="registerBtn" class="btn btn-primary">
+                    Create Account
+                </button>
+            </div>
+        </form>
+
+        
+        <div style="text-align: center; margin-top: 20px; color: var(--text-secondary);">
+            Already have an account? <a href="login.html" style="color: var(--primary-color); font-weight: 600;">Login here</a>
+        </div>
+    </div>
+
+    
+    <script src="theme.js"></script>
+
+    
+    <script>
+        const API_URL = BASE_URL + "/api";
+        let otpTimer = null;
+        let otpVerified = false;
+        let verificationToken = null;
+        let resendCooldown = 0;
+
+        
+        document.getElementById("sendOtpBtn").addEventListener("click", async () => {
+            const phone = document.getElementById("phone").value.trim();
+            const phoneError = document.getElementById("phoneError");
+            const sendOtpBtn = document.getElementById("sendOtpBtn");
+
+            
+            phoneError.textContent = "";
+            phoneError.classList.remove("show");
+
+            
+            if (!phone) {
+                phoneError.textContent = "Phone number is required";
+                phoneError.classList.add("show");
+                return;
+            }
+
+            if (phone.length !== 10) {
+                phoneError.textContent = "Phone number must be exactly 10 digits";
+                phoneError.classList.add("show");
+                return;
+            }
+
+            if (!/^[0-9]{10}$/.test(phone)) {
+                phoneError.textContent = "Phone number must contain only digits";
+                phoneError.classList.add("show");
+                return;
+            }
+
+            
+            sendOtpBtn.disabled = true;
+            sendOtpBtn.classList.add("btn-loading");
+            try {
+                const response = await window.apiCall('/api/auth/send-otp', {
+                    method: "POST",
+                    body: JSON.stringify({ phone })
+                });
+
+                if (response.success || response.data) {
+                    document.getElementById("otpInputSection").style.display = "block";
+                    document.getElementById("otpStatus").style.display = "block";
+                    startOTPTimer(5);
+                    sendOtpBtn.textContent = "✅ OTP Sent";
+                    sendOtpBtn.disabled = true;
+                }
+            } catch (error) {
+                phoneError.textContent = error.message || "Failed to send OTP";
+                phoneError.classList.add("show");
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.classList.remove("btn-loading");
+                sendOtpBtn.textContent = "Send OTP to Mobile";
+            }
+        });
+
+        
+        document.getElementById("verifyOtpBtn").addEventListener("click", async () => {
+            const phone = document.getElementById("phone").value.trim();
+            const otp = document.getElementById("otp").value.trim();
+            const otpError = document.getElementById("otpError");
+            const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+
+            otpError.textContent = "";
+            otpError.classList.remove("show");
+
+            if (!otp || otp.length !== 6) {
+                otpError.textContent = "Please enter a valid 6-digit OTP";
+                otpError.classList.add("show");
+                return;
+            }
+
+            verifyOtpBtn.disabled = true;
+            verifyOtpBtn.classList.add("btn-loading");
+            try {
+                const response = await window.apiCall('/api/auth/verify-otp', {
+                    method: "POST",
+                    body: JSON.stringify({ phone, otp })
+                });
+
+                if (response.success || response.data) {
+                    otpVerified = true;
+                    verificationToken = response.data?.data?.verificationToken || response.data?.verificationToken;
+                    console.log("Verification Token Captured:", verificationToken);
+                    clearInterval(otpTimer);
+                    
+                    document.getElementById("step1").style.display = "none";
+                    document.getElementById("step2").style.display = "block";
+                    document.getElementById("phoneVerified").style.display = "block";
+                    document.getElementById("phone").dataset.verified = "true";
+                    // Pre-fill phone in step 2
+                    document.getElementById("phoneStep2").value = phone;
+                }
+            } catch (error) {
+                otpError.textContent = error.message || "Invalid OTP";
+                otpError.classList.add("show");
+                verifyOtpBtn.disabled = false;
+                verifyOtpBtn.classList.remove("btn-loading");
+                verifyOtpBtn.textContent = "Verify OTP";
+            }
+        });
+
+        
+        function startOTPTimer(minutes) {
+            let seconds = minutes * 60;
+
+            otpTimer = setInterval(() => {
+                const min = Math.floor(seconds / 60);
+                const sec = seconds % 60;
+                document.getElementById("otpTimer").textContent = 
+                    `OTP expires in ${min}:${sec.toString().padStart(2, '0')}`;
+
+                if (seconds <= 0) {
+                    clearInterval(otpTimer);
+                    document.getElementById("otpInputSection").style.display = "none";
+                    document.getElementById("otpStatus").style.display = "none";
+                }
+
+                seconds--;
+            }, 1000);
+        }
+
+        
+        document.getElementById("password").addEventListener("input", (e) => {
+            const password = e.target.value;
+            const strengthIndicator = document.querySelector(".password-strength");
+            const strengthFill = document.getElementById("strengthFill");
+            const strengthText = document.getElementById("strengthText");
+
+            if (!password) {
+                strengthIndicator.classList.remove("show");
+                return;
+            }
+
+            strengthIndicator.classList.add("show");
+
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength++;
+
+            strengthFill.className = "strength-fill";
+            if (strength <= 2) {
+                strengthFill.classList.add("weak");
+                strengthText.textContent = "Weak";
+            } else if (strength <= 4) {
+                strengthFill.classList.add("medium");
+                strengthText.textContent = "Medium";
+            } else if (strength <= 5) {
+                strengthFill.classList.add("strong");
+                strengthText.textContent = "Strong";
+            } else {
+                strengthFill.classList.add("excellent");
+                strengthText.textContent = "Excellent";
+            }
+        });
+
+        // Live validation helper
+        const validateInput = (input, regex, errorElement, errorMessage) => {
+            input.addEventListener("blur", () => {
+                if (input.value && !regex.test(input.value)) {
+                    errorElement.textContent = errorMessage;
+                    errorElement.classList.add("show");
+                    input.classList.add("error");
+                } else {
+                    errorElement.classList.remove("show");
+                    input.classList.remove("error");
+                }
+            });
+            input.addEventListener("input", () => {
+                errorElement.classList.remove("show");
+                input.classList.remove("error");
+            });
+        };
+
+        // Validate phone in Step 1 (for OTP)
+        const phoneStep1 = document.getElementById("phone");
+        if (phoneStep1) {
+            validateInput(
+                phoneStep1, 
+                /^[0-9]{10}$/, 
+                document.getElementById("phoneError"), 
+                "Phone must be exactly 10 digits"
+            );
+        }
+
+        validateInput(
+            document.getElementById("fullName"), 
+            /^[a-zA-Z\s\-]{3,50}$/, 
+            document.getElementById("fullNameError"), 
+            "Name must be 3-50 letters/spaces"
+        );
+        validateInput(
+            document.getElementById("studentId"), 
+            /^[A-Z0-9]{10}$/, 
+            document.getElementById("studentIdError"), 
+            "Student ID must be 10 alphanumeric characters (e.g., 24345A4210)"
+        );
+
+        
+        document.getElementById("registrationForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (!otpVerified) {
+                alert("Please verify your mobile number with OTP first");
+                return;
+            }
+
+            const formData = {
+                fullName: document.getElementById("fullName").value.trim(),
+                studentId: document.getElementById("studentId").value.trim(),
+                phone: document.getElementById("phoneStep2").value.trim(),
+                password: document.getElementById("password").value,
+                confirmPassword: document.getElementById("confirmPassword").value,
+                verificationToken: verificationToken,
+                email: document.getElementById("fullName").value.toLowerCase().replace(/\s+/g, '') + "@student.hostel.local" // Generate email from name
+            };
+
+            // Validate all fields
+            if (!formData.fullName) {
+                alert("Please enter your full name");
+                return;
+            }
+
+            if (!formData.studentId || formData.studentId.length !== 10) {
+                alert("Student ID must be exactly 10 characters");
+                return;
+            }
+
+            if (!formData.password || formData.password.length < 8) {
+                alert("Password must be at least 8 characters");
+                return;
+            }
+
+            if (formData.password !== formData.confirmPassword) {
+                alert("Passwords do not match");
+                return;
+            }
+
+            const registerBtn = document.getElementById("registerBtn");
+            registerBtn.disabled = true;
+            registerBtn.classList.add("btn-loading");
+            try {
+                const response = await window.apiCall('/api/auth/register', {
+                    method: "POST",
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.success || response.data) {
+                    document.getElementById("successMessage").classList.add("show");
+                    document.getElementById("successText").textContent = "Account created! Redirecting to login...";
+                    setTimeout(() => {
+                        window.location.href = "login.html";
+                    }, 2500);
+                }
+            } catch (error) {
+                alert("Error: " + (error.message || "Registration failed"));
+                registerBtn.disabled = false;
+                registerBtn.classList.remove("btn-loading");
+            }
+        });
+
+        
+        window.addEventListener("themechange", (e) => {
+            const icon = document.getElementById("themeIcon");
+            if (icon) {
+                icon.textContent = e.detail.isDark ? "☀️" : "🌙";
+            }
+        });
+
+        
+        window.addEventListener("DOMContentLoaded", () => {
+            const icon = document.getElementById("themeIcon");
+            if (icon && window.themeManager) {
+                icon.textContent = window.themeManager.isDarkMode() ? "☀️" : "🌙";
+            }
+        });
+    </script>
+</body>
+</html>

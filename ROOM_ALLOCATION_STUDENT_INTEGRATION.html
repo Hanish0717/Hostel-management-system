@@ -1,0 +1,434 @@
+
+
+
+
+<style>
+.student-room-section {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 30px;
+    border-radius: 12px;
+    color: white;
+    margin: 20px 0;
+}
+
+.room-status-container {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 25px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    margin: 20px 0;
+}
+
+.room-status-header {
+    font-size: 16px;
+    opacity: 0.9;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.room-number-display {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 20px 0;
+    letter-spacing: 2px;
+}
+
+.room-details-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.room-details-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 15px;
+}
+
+.room-details-list li:last-child {
+    border-bottom: none;
+}
+
+.room-details-label {
+    opacity: 0.9;
+}
+
+.room-details-value {
+    font-weight: bold;
+}
+
+.roommates-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.roommates-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    opacity: 0.95;
+}
+
+.roommate-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 3px solid #10b981;
+}
+
+.roommate-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.roommate-id {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.no-room-container {
+    text-align: center;
+    padding: 50px 20px;
+}
+
+.no-room-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.no-room-message {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.no-room-submessage {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.room-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.room-amenity-badge {
+    display: inline-block;
+    background: rgba(16, 185, 129, 0.3);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+.room-occupancy-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+}
+
+.occupancy-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.occupancy-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #f59e0b);
+    transition: width 0.3s;
+}
+
+.occupancy-text {
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.room-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.room-action-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.room-action-btn-primary {
+    background: #10b981;
+    color: white;
+}
+
+.room-action-btn-primary:hover {
+    background: #059669;
+}
+
+.room-action-btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.room-action-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.room-message-banner {
+    padding: 12px;
+    border-radius: 8px;
+    margin: 15px 0;
+    display: none;
+}
+
+.room-message-banner.show {
+    display: block;
+}
+
+.room-message-banner.success {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid #10b981;
+    color: #10b981;
+}
+
+.room-message-banner.error {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #ef4444;
+}
+
+.room-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.room-info-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.room-info-label {
+    font-size: 11px;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+.room-info-value {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+</style>
+
+
+<div id="studentRoomSection" class="student-room-section">
+    <h2>🏠 My Room</h2>
+
+    <div id="messageContainer"></div>
+
+    
+    <div id="noRoomContainer" class="no-room-container" style="display: none;">
+        <div class="no-room-icon">📭</div>
+        <div class="no-room-message">No Room Allocated Yet</div>
+        <div class="no-room-submessage">Contact the admin to get a room allocated</div>
+    </div>
+
+    
+    <div id="roomContainer" style="display: none;">
+        <div class="room-status-container">
+            <div class="room-status-header">Your Room</div>
+
+            <div class="room-number-display" id="roomNumber">-</div>
+
+            
+            <div class="room-info-grid">
+                <div class="room-info-item">
+                    <div class="room-info-label">Block</div>
+                    <div class="room-info-value" id="roomBlock">-</div>
+                </div>
+                <div class="room-info-item">
+                    <div class="room-info-label">Floor</div>
+                    <div class="room-info-value" id="roomFloor">-</div>
+                </div>
+            </div>
+
+            
+            <ul class="room-details-list">
+                <li>
+                    <span class="room-details-label">Capacity</span>
+                    <span class="room-details-value" id="roomCapacity">-</span>
+                </li>
+                <li>
+                    <span class="room-details-label">Current Occupancy</span>
+                    <span class="room-details-value" id="roomOccupancy">-</span>
+                </li>
+            </ul>
+
+            
+            <div class="room-occupancy-indicator">
+                <div class="occupancy-bar">
+                    <div class="occupancy-fill" id="occupancyFill" style="width: 0%"></div>
+                </div>
+                <div class="occupancy-text" id="occupancyText">0%</div>
+            </div>
+
+            
+            <div id="amenitiesContainer" style="display: none;">
+                <div style="font-size: 12px; opacity: 0.9; margin-bottom: 10px;">✨ Room Amenities</div>
+                <div class="room-amenities" id="amenitiesList"></div>
+            </div>
+
+            
+            <div class="roommates-section">
+                <div class="roommates-title">👥 Roommates</div>
+                <div id="roommatesList">
+                    <div style="opacity: 0.8;">⏳ Loading...</div>
+                </div>
+            </div>
+
+            
+            <div class="room-actions">
+                <button class="room-action-btn room-action-btn-secondary" onclick="refreshRoomData()">
+                    🔄 Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <div style="font-size: 12px; opacity: 0.8; margin-top: 15px;">
+        🔄 Auto-refreshing every 10 seconds
+    </div>
+</div>
+
+
+<script>
+const API_URL = BASE_URL + "/api";
+
+
+async function loadStudentRoomData() {
+    try {
+        
+        if (!currentUserID) {
+            console.log('⚠️ currentUserID not set');
+            return;
+        }
+
+        const response = await fetch(`${API_URL}/rooms/student/${currentUserID}`);
+        const data = await response.json();
+
+        const noRoomContainer = document.getElementById('noRoomContainer');
+        const roomContainer = document.getElementById('roomContainer');
+
+        if (!response.ok || !data.data.room) {
+            
+            noRoomContainer.style.display = 'block';
+            roomContainer.style.display = 'none';
+            return;
+        }
+
+        
+        noRoomContainer.style.display = 'none';
+        roomContainer.style.display = 'block';
+
+        const room = data.data.room;
+
+        
+        document.getElementById('roomNumber').textContent = room.roomNumber;
+        document.getElementById('roomBlock').textContent = `Block ${room.block}`;
+        document.getElementById('roomFloor').textContent = `Floor ${room.floor}`;
+        document.getElementById('roomCapacity').textContent = room.capacity;
+        document.getElementById('roomOccupancy').textContent = `${room.occupiedCount}/${room.capacity}`;
+
+        
+        const occupancyPercent = (room.occupiedCount / room.capacity) * 100;
+        document.getElementById('occupancyFill').style.width = `${occupancyPercent}%`;
+        document.getElementById('occupancyText').textContent = `${Math.round(occupancyPercent)}%`;
+
+        
+        if (room.amenities && room.amenities.length > 0) {
+            document.getElementById('amenitiesContainer').style.display = 'block';
+            document.getElementById('amenitiesList').innerHTML = room.amenities
+                .map(amenity => `<div class="room-amenity-badge">✓ ${amenity}</div>`)
+                .join('');
+        }
+
+        
+        if (room.students && room.students.length > 0) {
+            const otherStudents = room.students.filter(s => s._id !== currentUserID);
+            
+            if (otherStudents.length > 0) {
+                document.getElementById('roommatesList').innerHTML = otherStudents
+                    .map(student => `
+                        <div class="roommate-card">
+                            <div class="roommate-name">${student.fullName}</div>
+                            <div class="roommate-id">${student.studentId || 'N/A'}</div>
+                        </div>
+                    `)
+                    .join('');
+            } else {
+                document.getElementById('roommatesList').innerHTML = '<div style="opacity: 0.8;">No roommates yet</div>';
+            }
+        }
+
+    } catch (err) {
+        console.error('Error loading room data:', err);
+        showRoomMessage('❌ Error loading room information', 'error');
+    }
+}
+
+
+function refreshRoomData() {
+    loadStudentRoomData();
+}
+
+
+function showRoomMessage(message, type) {
+    const container = document.getElementById('messageContainer');
+    container.innerHTML = `
+        <div class="room-message-banner show ${type}">
+            ${message}
+        </div>
+    `;
+
+    
+    setTimeout(() => {
+        container.innerHTML = '';
+    }, 5000);
+}
+
+
+function autoRefreshRoomData() {
+    loadStudentRoomData();
+    setInterval(() => {
+        loadStudentRoomData();
+    }, 10000); 
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    autoRefreshRoomData();
+});
+</script>

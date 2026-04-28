@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="global.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>Integration Guide - Dark/Light Mode Theme</title>
+    
+    
+    <link rel="stylesheet" href="theme.css">
+    
+    
+    <style>
+        
+        
+        
+        
+        
+        .my-element {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+        
+        
+        .bad-element {
+            background-color: #ffffff;      
+            color: #000000;                 
+            border: 1px solid #cccccc;      
+        }
+    </style>
+</head>
+<body>
+    
+    
+    <nav class="navbar">
+        <a href="/">Logo</a>
+        
+        
+    </nav>
+
+    <main>
+        
+        
+        
+        <button class="btn">Primary Button</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-outline">Outline</button>
+        
+        
+        <div class="card">
+            <h3>Card Title</h3>
+            <p>This card is automatically themed!</p>
+        </div>
+        
+        
+        <input class="form-input" placeholder="Enter text...">
+        <textarea class="form-input" placeholder="Enter message..."></textarea>
+        
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Column 1</th>
+                    <th>Column 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Data 1</td>
+                    <td>Data 2</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        
+        <span class="badge badge-success">Active</span>
+        <span class="badge badge-error">Failed</span>
+        
+        
+        <div class="alert alert-success">Success message</div>
+        <div class="alert alert-error">Error message</div>
+    </main>
+
+    
+    <script src="theme.js"></script>
+    
+    
+    <script>
+        
+        
+        window.addEventListener('themechange', (e) => {
+            console.log('Theme changed to:', e.detail.theme)
+            
+        })
+        
+        
+        const colors = themeManager.getThemeColors()
+        console.log(colors)
+        
+        
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <style>
+        body {
+            background-color: var(--bg-primary);     
+            color: var(--text-primary);               
+        }
+        .card {
+            background-color: var(--card-bg);         
+            border: 1px solid var(--border-color);    
+            padding: 20px;
+        }
+        button {
+            background-color: var(--primary-color);   
+            color: var(--button-text);                
+        }
+    </style>
+</head>
+<body>
+    <nav style="background-color: var(--navbar-bg);">    
+        <h1>Welcome</h1>
+                    
+    </nav>
+    <div class="card">
+        <p>Content</p>
+        <button class="btn">Click me</button>
+    </div>
+    <script src="theme.js"></script>                     
+</body>
+</html>
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="global.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Analytics - Warden</title>
+    <link rel="stylesheet" href="theme.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        body {
+            display: flex;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            background: var(--primary-color);
+            color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        .logo { font-size: 20px; font-weight: bold; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .close-sidebar { display: none; background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
+        .menu a { display: block; padding: 10px; margin: 8px 0; color: white; text-decoration: none; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        .menu a:hover, .menu a.active { background: rgba(255,255,255,0.2); font-weight: bold; }
+        
+        /* Main Layout */
+        .main {
+            flex: 1;
+            padding: 30px;
+            margin-left: 230px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* Header & Filters */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .header-title { display: flex; align-items: center; gap: 15px; }
+        .mobile-menu-btn { display: none; background: none; border: none; color: var(--text-primary); font-size: 24px; cursor: pointer; padding: 0; }
+        .dashboard-header h1 { margin: 0; font-size: 24px; color: var(--text-primary); }
+        .filters { display: flex; gap: 15px; flex-wrap: wrap; }
+        .filters input, .filters select { 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            background: var(--input-bg); 
+            color: var(--text-primary); 
+            font-size: 14px;
+        }
+        .theme-toggle-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-primary); }
+        
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .summary-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .summary-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+        }
+        .summary-card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .summary-card.total::before { background: var(--primary-color); }
+        .summary-card.present::before { background: #10b981; }
+        .summary-card.absent::before { background: #ef4444; }
+        .summary-card.pending::before { background: #f59e0b; }
+        
+        .summary-info h3 { margin: 0; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-info h2 { margin: 5px 0 0 0; font-size: 32px; color: var(--text-primary); font-weight: 700; }
+        .summary-icon { font-size: 36px; opacity: 0.9; }
+
+        /* Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 20px;
+        }
+        .chart-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-card h3 { margin-top: 0; color: var(--text-primary); font-size: 16px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .canvas-wrapper { position: relative; height: 250px; width: 100%; flex: 1; }
+
+        /* Table Section */
+        .table-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .table-header h3 { margin: 0; color: var(--text-primary); font-size: 18px; }
+        
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 15px; border-bottom: 1px solid var(--border-color); color: var(--text-primary); vertical-align: middle; }
+        th { background: var(--bg-secondary); font-weight: 600; text-transform: uppercase; font-size: 12px; color: var(--text-secondary); letter-spacing: 0.5px; }
+        tr:hover { background: var(--bg-secondary); }
+        
+        /* Radio Toggles */
+        .status-toggle { display: flex; gap: 8px; }
+        .status-toggle label {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            background: var(--input-bg);
+            color: var(--text-secondary);
+        }
+        .status-toggle input[type="radio"] { display: none; }
+        
+        .status-toggle input[value="present"]:checked + label { background: rgba(16, 185, 129, 0.1); color: #10b981; border-color: #10b981; }
+        .status-toggle input[value="absent"]:checked + label { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: #ef4444; }
+        .status-toggle input[value="leave"]:checked + label { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-color: #f59e0b; }
+
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; background: var(--primary-color); color: white; cursor: pointer; transition: 0.3s; font-weight: 600; font-size: 14px; }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary-color); color: var(--primary-color); }
+        .btn-outline:hover { background: var(--primary-color); color: white; }
+
+        .student-avatar { width: 35px; height: 35px; border-radius: 50%; background: var(--primary-color); color: white; display: inline-flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; margin-right: 10px; }
+        .student-name-col { display: flex; align-items: center; }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .charts-grid { grid-template-columns: 1fr 1fr; }
+            .chart-card:first-child { grid-column: span 2; }
+        }
+        
+        @media (max-width: 992px) {
+            .charts-grid { grid-template-columns: 1fr; }
+            .chart-card:first-child { grid-column: span 1; }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
+            .close-sidebar { display: block; }
+            .mobile-menu-btn { display: block; }
+            .main { margin-left: 0; padding: 15px; }
+            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .header-title { width: 100%; justify-content: space-between; }
+            .filters { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .filters .search-box { grid-column: span 2; }
+        }
+        
+        @media (max-width: 480px) {
+            .filters { grid-template-columns: 1fr; }
+            .filters .search-box { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div>
+            <div class="logo">
+                <span>👮 Warden Panel</span>
+                <button class="close-sidebar" onclick="toggleSidebar()">×</button>
+            </div>
+            <div class="menu">
+                <a href="wardendashboard.html">Dashboard</a>
+                <a href="attendancedashboard.html" class="active">Attendance</a>
+                <a href="wardendashboard.html">Food Tokens</a>
+                <a href="wardendashboard.html">Outings</a>
+                <a href="wardendashboard.html">Rooms</a>
+                <a href="wardendashboard.html">Complaints</a>
+                <a href="settings.html">⚙️ Settings</a>
+            </div>
+        </div>
+        <div>
+            <div style="margin-bottom: 15px; font-size: 14px;">Welcome, Warden</div>
+            <button class="btn btn-outline" style="width: 100%; border-color: rgba(255,255,255,0.5); color: white;" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        
+        <!-- Header & Filters -->
+        <div class="dashboard-header">
+            <div class="header-title">
+                <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+                <h1>Attendance Analytics</h1>
+                
+            </div>
+            <div class="filters">
+                <input type="date" id="dateFilter" value="">
+                <select id="blockFilter">
+                    <option value="all">All Blocks</option>
+                    <option value="A">Block A</option>
+                    <option value="B">Block B</option>
+                </select>
+                <input type="text" class="search-box" id="searchStudent" placeholder="🔍 Search student...">
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card total">
+                <div class="summary-info">
+                    <h3>Total Students</h3>
+                    <h2 id="statTotal">0</h2>
+                </div>
+                <div class="summary-icon">👥</div>
+            </div>
+            <div class="summary-card present">
+                <div class="summary-info">
+                    <h3>Present Today</h3>
+                    <h2 id="statPresent">0</h2>
+                </div>
+                <div class="summary-icon" style="color: #10b981;">✅</div>
+            </div>
+            <div class="summary-card absent">
+                <div class="summary-info">
+                    <h3>Absent Today</h3>
+                    <h2 id="statAbsent">0</h2>
+                </div>
+                <div class="summary-icon" style="color: #ef4444;">❌</div>
+            </div>
+            <div class="summary-card pending">
+                <div class="summary-info">
+                    <h3>Leave / Pending</h3>
+                    <h2 id="statPending">0</h2>
+                </div>
+                <div class="summary-icon" style="color: #f59e0b;">⏳</div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📈 7-Day Attendance Trend</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>📊 Today's Distribution</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="pieChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🏢 By Block</h3>
+                <div class="canvas-wrapper">
+                    <canvas id="donutChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Attendance Table -->
+        <div class="table-section">
+            <div class="table-header">
+                <h3>📝 Daily Attendance Roster</h3>
+                <button class="btn" onclick="saveAllAttendance()">Save All Changes</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Room / Block</th>
+                            <th>Status (Today)</th>
+                            <th>Remarks</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <!-- Populated by JS -->
+                        <tr><td colspan="5" style="text-align: center; padding: 40px;">Loading student data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Logic -->
+    <script src="theme.js"></script>
+    <script>
+        const API_URL = typeof BASE_URL !== 'undefined' ? `${BASE_URL}/api` : "http://localhost:5000/api";
+        
+        // Initialize Date Filter to Today
+        document.getElementById('dateFilter').valueAsDate = new Date();
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+
+        let students = [];
+
+        async function fetchStudents() {
+            try {
+                const response = await fetch(`${API_URL}/auth/students`);
+                if (!response.ok) throw new Error("Failed to fetch students");
+                const data = await response.json();
+                
+                students = data.map(s => ({
+                    id: s.studentId || s._id || "N/A",
+                    name: s.fullName || 'Unknown Student',
+                    room: s.room || 'N/A',
+                    block: s.block || 'N/A',
+                    status: 'pending',
+                    remarks: ''
+                }));
+                
+                // Attempt to fetch today's attendance to update statuses
+                try {
+                    const presentRes = await fetch(`${API_URL}/attendance/present`);
+                    if(presentRes.ok) {
+                        const presentData = await presentRes.json();
+                        presentData.forEach(p => {
+                            const st = students.find(s => s.id === p.studentId);
+                            if(st) st.status = 'present';
+                        });
+                    }
+                    const absentRes = await fetch(`${API_URL}/attendance/absent`);
+                    if(absentRes.ok) {
+                        const absentData = await absentRes.json();
+                        absentData.forEach(a => {
+                            const st = students.find(s => s.id === a.studentId);
+                            if(st) st.status = 'absent';
+                        });
+                    }
+                } catch(e) {
+                    console.log("Could not fetch today's exact attendance status", e);
+                }
+
+                updateSummaryCards();
+                renderTable();
+            } catch (error) {
+                console.error("Error fetching students:", error);
+                document.getElementById('attendanceTableBody').innerHTML = `<tr><td colspan="5" style="text-align: center; color: red;">Error loading students from server</td></tr>`;
+            }
+        }
+
+        // 1. Update Summary Cards
+        function updateSummaryCards() {
+            const total = students.length;
+            const present = students.filter(s => s.status === 'present').length;
+            const absent = students.filter(s => s.status === 'absent').length;
+            const pending = students.filter(s => s.status === 'pending' || s.status === 'leave').length;
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statPresent').innerText = present;
+            document.getElementById('statAbsent').innerText = absent;
+            document.getElementById('statPending').innerText = pending;
+            
+            updateCharts(present, absent, pending);
+        }
+
+        // 2. Render Table
+        function renderTable() {
+            const tbody = document.getElementById('attendanceTableBody');
+            const searchTerm = document.getElementById('searchStudent').value.toLowerCase();
+            const blockFilter = document.getElementById('blockFilter').value;
+
+            tbody.innerHTML = '';
+
+            const filteredStudents = students.filter(s => {
+                const matchesSearch = s.name.toLowerCase().includes(searchTerm) || s.id.toLowerCase().includes(searchTerm);
+                const matchesBlock = blockFilter === 'all' || s.block === blockFilter;
+                return matchesSearch && matchesBlock;
+            });
+
+            if (filteredStudents.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">No students found matching criteria</td></tr>`;
+                return;
+            }
+
+            filteredStudents.forEach(s => {
+                const initials = s.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div class="student-name-col">
+                            <div class="student-avatar">${initials}</div>
+                            <div>
+                                <div style="font-weight: 600;">${s.name}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">${s.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>Block ${s.block} - ${s.room}</td>
+                    <td>
+                        <div class="status-toggle">
+                            <input type="radio" id="present_${s.id}" name="status_${s.id}" value="present" ${s.status === 'present' ? 'checked' : ''} onchange="updateLocalStatus('${s.id}', 'present')">
+                            <label for="present_${s.id}">Present</label>
+
+                            <input type="radio" id="absent_${s.id}" name="status_${s.id}" value="absent" ${s.status === 'absent' ? 'checked' : ''} onchange="updateLocalStatus('${s.id}', 'absent')">
+                            <label for="absent_${s.id}">Absent</label>
+
+                            <input type="radio" id="leave_${s.id}" name="status_${s.id}" value="leave" ${s.status === 'leave' || s.status === 'pending' ? 'checked' : ''} onchange="updateLocalStatus('${s.id}', 'leave')">
+                            <label for="leave_${s.id}">Leave</label>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--input-bg); color: var(--text-primary);" 
+                               value="${s.remarks}" placeholder="Add note..." onchange="updateLocalRemarks('${s.id}', this.value)">
+                    </td>
+                    <td>
+                        <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="saveSingle('${s.id}')">Save</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Local state updaters
+        function updateLocalStatus(id, status) {
+            const student = students.find(s => s.id === id);
+            if(student) student.status = status;
+            updateSummaryCards(); // Live update charts!
+        }
+        function updateLocalRemarks(id, remarks) {
+            const student = students.find(s => s.id === id);
+            if(student) student.remarks = remarks;
+        }
+
+        // Save Actions
+        async function saveSingle(id) {
+            const student = students.find(s => s.id === id);
+            alert(`Saved attendance for ${student.name}: ${student.status.toUpperCase()}`);
+            // TODO: await fetch(API_URL + '/attendance/mark', ...)
+        }
+
+        async function saveAllAttendance() {
+            alert("Bulk saving all attendance changes to the server...");
+            // TODO: Send entire students array changes to backend
+        }
+
+        // 3. Chart.js Renderers
+        let lineChart, pieChart, donutChart;
+        
+        function initCharts() {
+            Chart.defaults.color = 'gray';
+            Chart.defaults.font.family = "'Segoe UI', sans-serif";
+            
+            // Line Chart (7 days)
+            const ctxLine = document.getElementById('lineChart').getContext('2d');
+            lineChart = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Attendance %',
+                        data: [85, 88, 92, 90, 85, 70, 75],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+
+            // Pie Chart
+            const ctxPie = document.getElementById('pieChart').getContext('2d');
+            pieChart = new Chart(ctxPie, {
+                type: 'pie',
+                data: {
+                    labels: ['Present', 'Absent', 'Leave'],
+                    datasets: [{
+                        data: [0, 0, 0], // Initial dummy
+                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: 'gray' } } }
+                }
+            });
+
+            // Donut Chart
+            const ctxDonut = document.getElementById('donutChart').getContext('2d');
+            donutChart = new Chart(ctxDonut, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Block A', 'Block B', 'Block C'],
+                    datasets: [{
+                        data: [45, 30, 15],
+                        backgroundColor: ['#667eea', '#764ba2', '#a18cd1'],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function updateCharts(present, absent, pending) {
+            if(pieChart) {
+                pieChart.data.datasets[0].data = [present, absent, pending];
+                pieChart.update();
+            }
+        }
+
+        // Event Listeners for Filters
+        document.getElementById('searchStudent').addEventListener('input', renderTable);
+        document.getElementById('blockFilter').addEventListener('change', renderTable);
+        
+        // Initializer
+        window.addEventListener('DOMContentLoaded', () => {
+            initCharts();
+            fetchStudents();
+            
+            // Initialize Theme Engine manually
+            if(typeof ThemeManager !== 'undefined') {
+                new ThemeManager();
+            }
+        });
+
+        // Setup theme toggle logic
+        document.querySelector('.theme-toggle-btn').addEventListener('click', () => {
+            const isDark = document.documentElement.classList.contains('dark');
+            const newTheme = isDark ? 'light' : 'dark';
+            document.documentElement.classList.remove('dark', 'light');
+            document.body.classList.remove('dark', 'light');
+            document.documentElement.classList.add(newTheme);
+            document.body.classList.add(newTheme);
+            localStorage.setItem('theme-preference', newTheme);
+        });
+    </script>
+</body>
+</html>
